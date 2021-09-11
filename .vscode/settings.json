@@ -1,0 +1,10 @@
+{
+  "editor.detectIndentation": false,
+  "editor.tabSize": 4,
+  "files.exclude": {
+    "target": true
+},
+"cSpell.words": [
+    "spawnable"
+]
+}
