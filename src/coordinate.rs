@@ -1,10 +1,10 @@
 #[derive(Copy, Clone, Eq, Hash, PartialEq, Debug)]
-pub struct Coordinate<T: Copy> {
+pub struct Coordinate<T: Copy + std::ops::Add<Output = T>> {
     pub x: T,
     pub y: T,
 }
 
-impl<T: Copy> Coordinate<T> {
+impl<T: Copy + std::ops::Add<Output = T>> Coordinate<T> {
     pub fn new(x: T, y: T) -> Self {
         return Coordinate { x, y };
     }
