@@ -1,4 +1,5 @@
 use crate::coordinate::Coordinate;
+use std::hash::Hash;
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub enum CellType {
@@ -11,14 +12,14 @@ pub enum CellType {
 }
 
 #[derive(PartialEq, Eq, Clone, Copy)]
-pub struct Cell<T: Copy + std::ops::Add<Output = T>> {
+pub struct Cell<T: Copy + std::ops::Add<Output = T> + Eq + Hash> {
     pub cell_type: CellType,
     pub coordinate: Coordinate<T>,
     pub spawnable: bool,
     pub walkable: bool,
 }
 
-impl<T: Copy + std::ops::Add<Output = T>> Cell<T> {
+impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Cell<T> {
     pub fn set_cell_type(&mut self, cell_type: CellType) {
         self.cell_type = cell_type;
         match self.cell_type {

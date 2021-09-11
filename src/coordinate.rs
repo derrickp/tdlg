@@ -1,10 +1,12 @@
+use std::hash::Hash;
+
 #[derive(Copy, Clone, Eq, Hash, PartialEq, Debug)]
-pub struct Coordinate<T: Copy + std::ops::Add<Output = T>> {
+pub struct Coordinate<T: Copy + std::ops::Add<Output = T> + Eq + Hash> {
     pub x: T,
     pub y: T,
 }
 
-impl<T: Copy + std::ops::Add<Output = T>> Coordinate<T> {
+impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Coordinate<T> {
     pub fn new(x: T, y: T) -> Self {
         return Coordinate { x, y };
     }

@@ -1,12 +1,13 @@
 use crate::cell::Cell;
+use std::hash::Hash;
 
 #[derive(Clone)]
-pub struct Room<T: Copy + std::ops::Add<Output = T>> {
+pub struct Room<T: Copy + std::ops::Add<Output = T> + Eq + Hash> {
     pub cells: Vec<Cell<T>>,
     pub max_side_length: usize,
 }
 
-impl<T: Copy + std::ops::Add<Output = T>> Room<T> {
+impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Room<T> {
     pub fn translate(&self, bottom_left_x: T, bottom_left_y: T) -> Self {
         let cells = self
             .cells
@@ -33,9 +34,7 @@ mod tests {
     #[test]
     fn translate_moves_room() {
         let room = Room::<i32> {
-            cells: vec![
-                Cell::<i32>::splatted_room_floor(1),
-            ],
+            cells: vec![Cell::<i32>::splatted_room_floor(1)],
             max_side_length: 4,
         };
 
