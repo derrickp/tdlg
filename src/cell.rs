@@ -20,6 +20,10 @@ pub struct Cell<T: Copy + std::ops::Add<Output = T> + Eq + Hash> {
 }
 
 impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Cell<T> {
+    pub fn is_at_location(&self, x: T, y: T) -> bool {
+        return self.coordinate.x == x && self.coordinate.y == y;
+    }
+
     pub fn set_cell_type(&mut self, cell_type: CellType) {
         self.cell_type = cell_type;
         match self.cell_type {
@@ -181,6 +185,22 @@ mod tests {
             assert_eq!(new_cell.cell_type, crate::cell::CellType::Floor);
             assert_eq!(new_cell.spawnable, true);
             assert_eq!(new_cell.walkable, true);
+        }
+    }
+
+    mod is_at_location {
+        use crate::cell::Cell;
+
+        #[test]
+        fn it_returns_true_when_same_coordinates() {
+            let cell = Cell::splat(0, crate::cell::CellType::Empty, false, false);
+            assert_eq!(cell.is_at_location(0, 0), true);
+        }
+
+        #[test]
+        fn it_returns_false_when_same_coordinates() {
+            let cell = Cell::splat(0, crate::cell::CellType::Empty, false, false);
+            assert_eq!(cell.is_at_location(1, 0), false);
         }
     }
 
