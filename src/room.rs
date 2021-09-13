@@ -64,7 +64,6 @@ impl Room<i32> {
             let trimmed = line.trim();
 
             for (x, c) in trimmed.chars().enumerate() {
-                println!("{} {} {}", c, x, y);
                 cells.push(Self::build_cell(x as i32, y as i32, c));
                 side_length += 1;
             }
