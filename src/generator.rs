@@ -20,8 +20,8 @@ impl Generator {
                 let template = room_templates.get(index).unwrap().clone();
                 let max_side_length = (&template).max_side_length;
 
-                let x: i32 = rng.gen_range(1..=(100 - max_side_length as i32));
-                let y: i32 = rng.gen_range(1..=(100 - max_side_length as i32 - 1));
+                let x: i32 = rng.gen_range(1..=(self.grid_size - max_side_length) as i32);
+                let y: i32 = rng.gen_range(1..=(self.grid_size - max_side_length - 1) as i32);
                 let room = template.translate(x, y);
 
                 if room
