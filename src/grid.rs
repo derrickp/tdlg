@@ -1,11 +1,7 @@
 use rand::Rng;
 use std::{collections::HashMap, hash::Hash};
 
-use crate::{
-    cell::{Cell, CellType},
-    coordinate::Coordinate,
-    room::Room,
-};
+use crate::{cell::Cell, coordinate::Coordinate, room::Room};
 
 pub struct Grid<T: Copy + std::ops::Add<Output = T> + Eq + Hash> {
     pub cells: HashMap<Coordinate<T>, Cell<T>>,
@@ -17,16 +13,11 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Grid<T> {
         self.cells.insert(cell.coordinate, cell);
     }
 
-    fn set_cell_type(&mut self, x: T, y: T, cell_type: CellType) {
-        let coordinate = Coordinate { x, y };
-        if let Some(cell) = self.cells.get_mut(&coordinate) {
-            cell.set_cell_type(cell_type);
-        };
-    }
-
     pub fn add_room(&mut self, room: Room<T>) {
         for cell in room.cells.iter() {
-            self.set_cell_type(cell.coordinate.x, cell.coordinate.y, cell.cell_type);
+            if let Some(grid_cell) = self.cells.get_mut(&cell.coordinate) {
+                grid_cell.set_cell_type(cell.cell_type);
+            }
         }
     }
 
