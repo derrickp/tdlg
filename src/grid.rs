@@ -31,17 +31,15 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Grid<T> {
     }
 
     pub fn fill_empty_cells(&mut self) {
-        for cell in self.cells.values_mut() {
-            if cell.cell_type == CellType::Empty {
-                cell.set_cell_type(CellType::Floor);
-            }
+        for cell in self.cells.values_mut().filter(|c| c.is_empty()) {
+            cell.set_to_floor();
         }
     }
 
     pub fn is_cell_empty(&self, coordinate: &Coordinate<T>) -> bool {
         let cell = self.cells.get(coordinate);
         match cell {
-            Some(c) => c.cell_type == CellType::Empty,
+            Some(c) => c.is_empty(),
             None => false,
         }
     }

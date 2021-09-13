@@ -20,6 +20,14 @@ pub struct Cell<T: Copy + std::ops::Add<Output = T> + Eq + Hash> {
 }
 
 impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Cell<T> {
+    pub fn is_empty(&self) -> bool {
+        return self.cell_type == CellType::Empty;
+    }
+
+    pub fn set_to_floor(&mut self) {
+        self.cell_type = CellType::Floor;
+    }
+
     pub fn is_at_location(&self, x: T, y: T) -> bool {
         return self.coordinate.x == x && self.coordinate.y == y;
     }
