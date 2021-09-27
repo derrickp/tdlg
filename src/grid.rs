@@ -42,18 +42,14 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Grid<T> {
             .iter()
             .filter_map(|(coordinate, cell)| {
                 if cell.spawnable {
-                    Some(coordinate.clone())
+                    Some(*coordinate)
                 } else {
                     None
                 }
             })
             .collect();
         let index: usize = rng.gen_range(0..spawnable_cells.len());
-        if let Some(coordinate) = spawnable_cells.get(index) {
-            return Some(coordinate.clone());
-        } else {
-            return None;
-        }
+        spawnable_cells.get(index).copied()
     }
 }
 
@@ -84,6 +80,6 @@ impl Grid<i32> {
             }
         }
 
-        return grid;
+        grid
     }
 }

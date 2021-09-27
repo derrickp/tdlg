@@ -20,10 +20,10 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Room<T> {
             })
             .collect();
 
-        return Self {
+        Self {
             cells,
             max_side_length: self.max_side_length,
-        };
+        }
     }
 
     pub fn cell_at(&self, x: T, y: T) -> Option<&Cell<T>> {
@@ -41,7 +41,7 @@ impl Room<i32> {
     ///
     /// Where w is wall, f is floor, d is door (as an example)
     pub fn from_template_string(template: String) -> Self {
-        let mut lines: Vec<&str> = template.split("\n").collect();
+        let mut lines: Vec<&str> = template.split('\n').collect();
         // Need to reverse so that we get the bottom ones as the first
         // cells that we create.
         lines.reverse();
@@ -79,10 +79,10 @@ impl Room<i32> {
             max_side_length = y_side_length;
         }
 
-        return Room {
+        Room {
             cells,
             max_side_length,
-        };
+        }
     }
 
     fn build_cell(x: i32, y: i32, c: char) -> Cell<i32> {

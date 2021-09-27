@@ -8,11 +8,11 @@ pub struct Coordinate<T: Copy + std::ops::Add<Output = T> + Eq + Hash> {
 
 impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Coordinate<T> {
     pub fn new(x: T, y: T) -> Self {
-        return Coordinate { x, y };
+        Coordinate { x, y }
     }
 
     pub fn splat(value: T) -> Self {
-        return Coordinate { x: value, y: value };
+        Coordinate { x: value, y: value }
     }
 }
 

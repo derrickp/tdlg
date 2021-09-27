@@ -21,7 +21,7 @@ pub struct Cell<T: Copy + std::ops::Add<Output = T> + Eq + Hash> {
 
 impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Cell<T> {
     pub fn is_empty(&self) -> bool {
-        return self.cell_type == CellType::Empty;
+        self.cell_type == CellType::Empty
     }
 
     pub fn set_to_floor(&mut self) {
@@ -29,7 +29,7 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Cell<T> {
     }
 
     pub fn is_at_location(&self, x: T, y: T) -> bool {
-        return self.coordinate.x == x && self.coordinate.y == y;
+        self.coordinate.x == x && self.coordinate.y == y
     }
 
     pub fn set_cell_type(&mut self, cell_type: CellType) {
@@ -52,58 +52,58 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Cell<T> {
     }
 
     pub fn translate(&self, x: T, y: T) -> Self {
-        return Self {
+        Self {
             coordinate: Coordinate::new(x, y),
             cell_type: self.cell_type,
             spawnable: self.spawnable,
             walkable: self.walkable,
-        };
+        }
     }
 
     pub fn new(x: T, y: T, cell_type: CellType, spawnable: bool, walkable: bool) -> Self {
-        return Self {
+        Self {
             cell_type,
             spawnable,
             walkable,
             coordinate: Coordinate::new(x, y),
-        };
+        }
     }
 
     pub fn splat(value: T, cell_type: CellType, spawnable: bool, walkable: bool) -> Self {
-        return Self {
+        Self {
             cell_type,
             spawnable,
             walkable,
             coordinate: Coordinate::splat(value),
-        };
+        }
     }
 
     pub fn splatted_room_wall(value: T) -> Self {
-        return Self::splat(value, CellType::RoomWall, false, false);
+        Self::splat(value, CellType::RoomWall, false, false)
     }
 
     pub fn room_wall(x: T, y: T) -> Self {
-        return Self::new(x, y, CellType::RoomWall, false, false);
+        Self::new(x, y, CellType::RoomWall, false, false)
     }
 
     pub fn splatted_room_floor(value: T) -> Self {
-        return Self::splat(value, CellType::RoomFloor, true, true);
+        Self::splat(value, CellType::RoomFloor, true, true)
     }
 
     pub fn room_floor(x: T, y: T) -> Self {
-        return Self::new(x, y, CellType::RoomFloor, true, true);
+        Self::new(x, y, CellType::RoomFloor, true, true)
     }
 
     pub fn room_door(x: T, y: T) -> Self {
-        return Self::new(x, y, CellType::Door, false, true);
+        Self::new(x, y, CellType::Door, false, true)
     }
 
     pub fn outer_wall(x: T, y: T) -> Self {
-        return Self::new(x, y, CellType::OuterWall, false, false);
+        Self::new(x, y, CellType::OuterWall, false, false)
     }
 
     pub fn empty_cell(x: T, y: T) -> Self {
-        return Self::new(x, y, CellType::Empty, false, false);
+        Self::new(x, y, CellType::Empty, false, false)
     }
 }
 

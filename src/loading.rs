@@ -4,11 +4,9 @@ use walkdir::WalkDir;
 
 pub fn load_room_templates(path: &str) -> Option<Vec<Room<i32>>> {
     let mut templates: Vec<String> = Vec::new();
-    for dir_entry in WalkDir::new(path) {
-        if let Ok(entry) = dir_entry {
-            if let Ok(content) = fs::read_to_string(entry.path()) {
-                templates.push(content);
-            }
+    for entry in WalkDir::new(path).into_iter().flatten() {
+        if let Ok(content) = fs::read_to_string(entry.path()) {
+            templates.push(content);
         }
     }
 
