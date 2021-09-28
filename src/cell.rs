@@ -133,8 +133,8 @@ mod tests {
                 walkable: false,
             };
             cell.set_cell_type(crate::cell::CellType::RoomFloor);
-            assert_eq!(cell.spawnable, true);
-            assert_eq!(cell.walkable, true);
+            assert!(cell.spawnable);
+            assert!(cell.walkable);
         }
 
         #[test]
@@ -146,8 +146,8 @@ mod tests {
                 walkable: false,
             };
             cell.set_cell_type(crate::cell::CellType::Floor);
-            assert_eq!(cell.spawnable, true);
-            assert_eq!(cell.walkable, true);
+            assert!(cell.spawnable);
+            assert!(cell.walkable);
         }
 
         #[test]
@@ -159,8 +159,8 @@ mod tests {
                 walkable: false,
             };
             cell.set_cell_type(crate::cell::CellType::Door);
-            assert_eq!(cell.spawnable, false);
-            assert_eq!(cell.walkable, true);
+            assert!(!cell.spawnable);
+            assert!(cell.walkable);
         }
     }
 
@@ -191,8 +191,8 @@ mod tests {
             let new_cell = cell.translate(3, 3);
 
             assert_eq!(new_cell.cell_type, crate::cell::CellType::Floor);
-            assert_eq!(new_cell.spawnable, true);
-            assert_eq!(new_cell.walkable, true);
+            assert!(new_cell.spawnable);
+            assert!(new_cell.walkable);
         }
     }
 
@@ -202,13 +202,13 @@ mod tests {
         #[test]
         fn it_returns_true_when_same_coordinates() {
             let cell = Cell::splat(0, crate::cell::CellType::Empty, false, false);
-            assert_eq!(cell.is_at_location(0, 0), true);
+            assert!(cell.is_at_location(0, 0));
         }
 
         #[test]
         fn it_returns_false_when_same_coordinates() {
             let cell = Cell::splat(0, crate::cell::CellType::Empty, false, false);
-            assert_eq!(cell.is_at_location(1, 0), false);
+            assert!(!cell.is_at_location(1, 0));
         }
     }
 
@@ -220,8 +220,8 @@ mod tests {
             let cell = Cell::<i32>::new(3, 3, crate::cell::CellType::Floor, false, false);
             assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
             assert_eq!(cell.cell_type, crate::cell::CellType::Floor);
-            assert_eq!(cell.spawnable, false);
-            assert_eq!(cell.walkable, false);
+            assert!(!cell.spawnable);
+            assert!(!cell.walkable);
         }
     }
 
@@ -233,8 +233,8 @@ mod tests {
             let cell = Cell::<i32>::splat(3, crate::cell::CellType::Floor, false, false);
             assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
             assert_eq!(cell.cell_type, crate::cell::CellType::Floor);
-            assert_eq!(cell.spawnable, false);
-            assert_eq!(cell.walkable, false);
+            assert!(!cell.spawnable);
+            assert!(!cell.walkable);
         }
     }
 
@@ -246,8 +246,8 @@ mod tests {
             let cell = Cell::<i32>::splatted_room_floor(3);
             assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
             assert_eq!(cell.cell_type, crate::cell::CellType::RoomFloor);
-            assert_eq!(cell.spawnable, true);
-            assert_eq!(cell.walkable, true);
+            assert!(cell.spawnable);
+            assert!(cell.walkable);
         }
     }
 
@@ -259,8 +259,8 @@ mod tests {
             let cell = Cell::<i32>::room_floor(3, 3);
             assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
             assert_eq!(cell.cell_type, crate::cell::CellType::RoomFloor);
-            assert_eq!(cell.spawnable, true);
-            assert_eq!(cell.walkable, true);
+            assert!(cell.spawnable);
+            assert!(cell.walkable);
         }
     }
 
@@ -272,8 +272,8 @@ mod tests {
             let cell = Cell::<i32>::splatted_room_wall(3);
             assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
             assert_eq!(cell.cell_type, crate::cell::CellType::RoomWall);
-            assert_eq!(cell.spawnable, false);
-            assert_eq!(cell.walkable, false);
+            assert!(!cell.spawnable);
+            assert!(!cell.walkable);
         }
     }
 
@@ -285,8 +285,8 @@ mod tests {
             let cell = Cell::<i32>::room_wall(3, 3);
             assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
             assert_eq!(cell.cell_type, crate::cell::CellType::RoomWall);
-            assert_eq!(cell.spawnable, false);
-            assert_eq!(cell.walkable, false);
+            assert!(!cell.spawnable);
+            assert!(!cell.walkable);
         }
     }
 
@@ -298,8 +298,8 @@ mod tests {
             let cell = Cell::<i32>::room_door(3, 3);
             assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
             assert_eq!(cell.cell_type, crate::cell::CellType::Door);
-            assert_eq!(cell.spawnable, false);
-            assert_eq!(cell.walkable, true);
+            assert!(!cell.spawnable);
+            assert!(cell.walkable);
         }
     }
 
@@ -311,8 +311,8 @@ mod tests {
             let cell = Cell::<i32>::outer_wall(3, 3);
             assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
             assert_eq!(cell.cell_type, crate::cell::CellType::OuterWall);
-            assert_eq!(cell.spawnable, false);
-            assert_eq!(cell.walkable, false);
+            assert!(!cell.spawnable);
+            assert!(!cell.walkable);
         }
     }
 
@@ -324,8 +324,8 @@ mod tests {
             let cell = Cell::<i32>::empty_cell(3, 3);
             assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
             assert_eq!(cell.cell_type, crate::cell::CellType::Empty);
-            assert_eq!(cell.spawnable, false);
-            assert_eq!(cell.walkable, false);
+            assert!(!cell.spawnable);
+            assert!(!cell.walkable);
         }
     }
 }
