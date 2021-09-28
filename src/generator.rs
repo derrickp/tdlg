@@ -7,10 +7,29 @@ pub struct Generator {
     pub all_room_paths: Vec<RoomPaths>,
 }
 
+#[derive(Debug)]
+pub struct GenerationError {
+    pub message: String,
+}
+
+impl GenerationError {
+    fn no_room_paths() -> Self {
+        Self {
+            message: "no_room_paths".to_string(),
+        }
+    }
+
+    fn room_templates_cannot_be_loaded() -> Self {
+        Self {
+            message: "room_templates_cannot_be_loaded".to_string(),
+        }
+    }
+}
+
 impl Generator {
-    pub fn generate_top_down_map(&self) -> Option<TopDownMap> {
+    pub fn generate_top_down_map(&self) -> Result<TopDownMap, GenerationError> {
         if self.all_room_paths.is_empty() {
-            return None;
+            return Err(GenerationError::no_room_paths());
         }
 
         let room_iterator = self
@@ -25,7 +44,7 @@ impl Generator {
         }
 
         if room_templates.is_empty() {
-            return None;
+            return Err(GenerationError::room_templates_cannot_be_loaded());
         }
 
         let mut rng = rand::thread_rng();
@@ -57,7 +76,7 @@ impl Generator {
 
         let entry_coordinate = grid.random_spawnable_coordinate().unwrap();
 
-        Some(TopDownMap {
+        Ok(TopDownMap {
             grid,
             room_count,
             entry_coordinate,
