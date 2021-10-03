@@ -16,7 +16,8 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Grid<T> {
     pub fn add_room(&mut self, room: Room<T>) {
         for cell in room.cells.iter() {
             if let Some(grid_cell) = self.cells.get_mut(&cell.coordinate) {
-                grid_cell.set_cell_type(cell.cell_type);
+                grid_cell.clear_contents();
+                grid_cell.add_cell_layers(&cell.layers);
             }
         }
     }
@@ -41,7 +42,7 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Grid<T> {
             .cells
             .iter()
             .filter_map(|(coordinate, cell)| {
-                if cell.spawnable {
+                if cell.is_spawnable() {
                     Some(*coordinate)
                 } else {
                     None
