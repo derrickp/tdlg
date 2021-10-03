@@ -21,8 +21,7 @@ impl RoomPaths {
                 }
 
                 for fill_path in &self.fill_template_paths {
-                    let mut room_template: Vec<String> = Vec::new();
-                    room_template.push(content.clone());
+                    let mut room_template: Vec<String> = vec![content.clone()];
                     for fill_entry in WalkDir::new(fill_path).into_iter().flatten() {
                         if let Ok(item_content) = fs::read_to_string(fill_entry.path()) {
                             room_template.push(item_content.clone());
@@ -31,7 +30,9 @@ impl RoomPaths {
                     room_templates.push(room_template);
                 }
 
-                room_templates.iter().for_each(|template| templates.push(template.clone()));
+                room_templates
+                    .iter()
+                    .for_each(|template| templates.push(template.clone()));
             }
         }
 
