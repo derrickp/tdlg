@@ -1,14 +1,17 @@
-use rand::Rng;
+use rand::prelude::*;
+use rand_pcg::Pcg64;
+use rand_seeder::Seeder;
 use std::{collections::HashMap, hash::Hash};
 
 use crate::{cell::Cell, coordinate::Coordinate, room::Room};
 
-pub struct Grid<T: Copy + std::ops::Add<Output = T> + Eq + Hash> {
+pub struct Grid<T: Copy + std::ops::Add<Output = T> + Eq + Hash + Ord> {
     pub cells: HashMap<Coordinate<T>, Cell<T>>,
     pub size: usize,
+    pub seed: &'static str,
 }
 
-impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Grid<T> {
+impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash + Ord> Grid<T> {
     fn add_cell(&mut self, cell: Cell<T>) {
         self.cells.insert(cell.coordinate, cell);
     }
@@ -36,9 +39,10 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Grid<T> {
         }
     }
 
-    pub fn random_spawnable_coordinate(&self) -> Option<Coordinate<T>> {
-        let mut rng = rand::thread_rng();
-        let spawnable_cells: Vec<Coordinate<T>> = self
+    pub fn random_spawnable_coordinate(&mut self) -> Option<Coordinate<T>> {
+        let mut rng: Pcg64 = Seeder::from(self.seed).make_rng();
+
+        let mut spawnable_cells: Vec<Coordinate<T>> = self
             .cells
             .iter()
             .filter_map(|(coordinate, cell)| {
@@ -49,6 +53,7 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Grid<T> {
                 }
             })
             .collect();
+        spawnable_cells.sort_by_key(|coordinate| (coordinate.x, coordinate.y));
         let index: usize = rng.gen_range(0..spawnable_cells.len());
         spawnable_cells.get(index).copied()
     }
@@ -69,9 +74,10 @@ impl Grid<i32> {
         }
     }
 
-    pub fn build(size: usize) -> Self {
+    pub fn build(size: usize, seed: &'static str) -> Self {
         let mut grid = Self {
             size,
+            seed,
             cells: HashMap::default(),
         };
 
