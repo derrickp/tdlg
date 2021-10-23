@@ -1,7 +1,7 @@
 use crate::{grid::Grid, loading::RoomPaths, map::TopDownMap, room::Room};
 use rand::prelude::*;
-use rand_seeder::Seeder;
 use rand_pcg::Pcg64;
+use rand_seeder::Seeder;
 
 pub struct Generator {
     pub grid_size: usize,
@@ -40,7 +40,7 @@ impl Generator {
             .iter()
             .map(|f| f.load_rooms().into_iter().flatten())
             .flatten();
-        let mut room_templates: Vec<Room<i32>> = Vec::new();
+        let mut room_templates: Vec<Room> = Vec::new();
 
         for room in room_iterator {
             room_templates.push(room);

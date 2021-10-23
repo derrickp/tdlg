@@ -9,7 +9,7 @@ pub struct RoomPaths {
 }
 
 impl RoomPaths {
-    pub fn load_rooms(&self) -> Option<Vec<Room<i32>>> {
+    pub fn load_rooms(&self) -> Option<Vec<Room>> {
         let mut templates: Vec<Vec<String>> = Vec::new();
 
         for entry in WalkDir::new(self.base_template_path).into_iter().flatten() {
@@ -42,9 +42,7 @@ impl RoomPaths {
             Some(
                 templates
                     .iter()
-                    .map(|template_string| {
-                        Room::<i32>::from_template_strings(template_string.clone())
-                    })
+                    .map(|template_string| Room::from_template_strings(template_string.clone()))
                     .collect(),
             )
         }

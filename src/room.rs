@@ -1,14 +1,13 @@
 use crate::cell::{Cell, CellLayerType};
-use std::hash::Hash;
 
 #[derive(Clone)]
-pub struct Room<T: Copy + std::ops::Add<Output = T> + Eq + Hash> {
-    pub cells: Vec<Cell<T>>,
+pub struct Room {
+    pub cells: Vec<Cell>,
     pub max_side_length: usize,
 }
 
-impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Room<T> {
-    pub fn translate(&self, bottom_left_x: T, bottom_left_y: T) -> Self {
+impl Room {
+    pub fn translate(&self, bottom_left_x: i32, bottom_left_y: i32) -> Self {
         let cells = self
             .cells
             .iter()
@@ -26,15 +25,13 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Room<T> {
         }
     }
 
-    pub fn cell_at(&self, x: T, y: T) -> Option<&Cell<T>> {
+    pub fn cell_at(&self, x: i32, y: i32) -> Option<&Cell> {
         return self.cells.iter().find(|cell| cell.is_at_location(x, y));
     }
-}
 
-impl Room<i32> {
     pub fn from_template_strings(templates: Vec<String>) -> Self {
         let mut max_side_length: usize = 0;
-        let mut cells: Vec<Cell<i32>> = Vec::new();
+        let mut cells: Vec<Cell> = Vec::new();
 
         for template in templates {
             let mut lines: Vec<&str> = template.split('\n').collect();
@@ -98,7 +95,7 @@ impl Room<i32> {
         Self::from_template_strings(vec![template])
     }
 
-    fn build_cell(x: i32, y: i32, c: char) -> Cell<i32> {
+    fn build_cell(x: i32, y: i32, c: char) -> Cell {
         let layer = Self::build_cell_layer(c);
         Cell::new(x, y, layer)
     }
@@ -129,8 +126,8 @@ mod tests {
 
     #[test]
     fn translate_moves_room() {
-        let room = Room::<i32> {
-            cells: vec![Cell::<i32>::splatted_room_floor(1)],
+        let room = Room {
+            cells: vec![Cell::splatted_room_floor(1)],
             max_side_length: 4,
         };
 

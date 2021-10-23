@@ -1,5 +1,4 @@
 use crate::coordinate::Coordinate;
-use std::hash::Hash;
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub enum CellLayerType {
@@ -27,12 +26,12 @@ impl CellLayerType {
 }
 
 #[derive(PartialEq, Eq, Clone)]
-pub struct Cell<T: Copy + std::ops::Add<Output = T> + Eq + Hash> {
-    pub coordinate: Coordinate<T>,
+pub struct Cell {
+    pub coordinate: Coordinate,
     pub layers: Vec<CellLayerType>,
 }
 
-impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Cell<T> {
+impl Cell {
     pub fn clear_contents(&mut self) {
         self.layers.clear()
     }
@@ -46,7 +45,7 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Cell<T> {
         self.layers.push(CellLayerType::Floor);
     }
 
-    pub fn is_at_location(&self, x: T, y: T) -> bool {
+    pub fn is_at_location(&self, x: i32, y: i32) -> bool {
         self.coordinate.x == x && self.coordinate.y == y
     }
 
@@ -102,14 +101,14 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Cell<T> {
         }
     }
 
-    pub fn translate(&self, x: T, y: T) -> Self {
+    pub fn translate(&self, x: i32, y: i32) -> Self {
         Self {
             coordinate: Coordinate::new(x, y),
             layers: self.layers.clone(),
         }
     }
 
-    pub fn new(x: T, y: T, cell_type: CellLayerType) -> Self {
+    pub fn new(x: i32, y: i32, cell_type: CellLayerType) -> Self {
         let layers: Vec<CellLayerType> = if cell_type != CellLayerType::Empty {
             vec![cell_type]
         } else {
@@ -122,38 +121,38 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash> Cell<T> {
         }
     }
 
-    pub fn splat(value: T, cell_type: CellLayerType) -> Self {
+    pub fn splat(value: i32, cell_type: CellLayerType) -> Self {
         Self {
             coordinate: Coordinate::splat(value),
             layers: vec![cell_type],
         }
     }
 
-    pub fn splatted_room_wall(value: T) -> Self {
+    pub fn splatted_room_wall(value: i32) -> Self {
         Self::splat(value, CellLayerType::RoomWall)
     }
 
-    pub fn room_wall(x: T, y: T) -> Self {
+    pub fn room_wall(x: i32, y: i32) -> Self {
         Self::new(x, y, CellLayerType::RoomWall)
     }
 
-    pub fn splatted_room_floor(value: T) -> Self {
+    pub fn splatted_room_floor(value: i32) -> Self {
         Self::splat(value, CellLayerType::RoomFloor)
     }
 
-    pub fn room_floor(x: T, y: T) -> Self {
+    pub fn room_floor(x: i32, y: i32) -> Self {
         Self::new(x, y, CellLayerType::RoomFloor)
     }
 
-    pub fn room_door(x: T, y: T) -> Self {
+    pub fn room_door(x: i32, y: i32) -> Self {
         Self::new(x, y, CellLayerType::Door)
     }
 
-    pub fn outer_wall(x: T, y: T) -> Self {
+    pub fn outer_wall(x: i32, y: i32) -> Self {
         Self::new(x, y, CellLayerType::OuterWall)
     }
 
-    pub fn empty_cell(x: T, y: T) -> Self {
+    pub fn empty_cell(x: i32, y: i32) -> Self {
         Self::new(x, y, CellLayerType::Empty)
     }
 }
@@ -165,7 +164,7 @@ mod tests {
 
         #[test]
         fn it_changes_the_cell_type() {
-            let mut cell = Cell::<i32> {
+            let mut cell = Cell {
                 coordinate: Coordinate::splat(2),
                 layers: vec![],
             };
@@ -175,7 +174,7 @@ mod tests {
 
         #[test]
         fn it_updates_spawnable_walkable_for_room_floor() {
-            let mut cell = Cell::<i32> {
+            let mut cell = Cell {
                 coordinate: Coordinate::splat(2),
                 layers: vec![],
             };
@@ -186,7 +185,7 @@ mod tests {
 
         #[test]
         fn it_updates_spawnable_walkable_for_floor() {
-            let mut cell = Cell::<i32> {
+            let mut cell = Cell {
                 coordinate: Coordinate::splat(2),
                 layers: vec![],
             };
@@ -197,7 +196,7 @@ mod tests {
 
         #[test]
         fn it_updates_spawnable_walkable_for_door() {
-            let mut cell = Cell::<i32> {
+            let mut cell = Cell {
                 coordinate: Coordinate::splat(2),
                 layers: vec![],
             };
@@ -212,18 +211,18 @@ mod tests {
 
         #[test]
         fn it_updates_cell_coordinates() {
-            let cell = Cell::<i32> {
+            let cell = Cell {
                 coordinate: Coordinate::splat(2),
                 layers: vec![],
             };
             let new_cell = cell.translate(3, 3);
 
-            assert_eq!(new_cell.coordinate, Coordinate::<i32>::new(3, 3));
+            assert_eq!(new_cell.coordinate, Coordinate::new(3, 3));
         }
 
         #[test]
         fn it_keeps_rest_of_cell() {
-            let cell = Cell::<i32> {
+            let cell = Cell {
                 coordinate: Coordinate::splat(2),
                 layers: vec![crate::cell::CellLayerType::Floor],
             };
@@ -256,8 +255,8 @@ mod tests {
 
         #[test]
         fn it_creates_cell_properly() {
-            let cell = Cell::<i32>::new(3, 3, crate::cell::CellLayerType::Floor);
-            assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
+            let cell = Cell::new(3, 3, crate::cell::CellLayerType::Floor);
+            assert_eq!(cell.coordinate, Coordinate::new(3, 3));
             assert_eq!(cell.cell_type(), crate::cell::CellLayerType::Floor);
             assert!(cell.is_spawnable());
             assert!(cell.is_walkable());
@@ -269,8 +268,8 @@ mod tests {
 
         #[test]
         fn it_creates_cell_properly() {
-            let cell = Cell::<i32>::splat(3, crate::cell::CellLayerType::Floor);
-            assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
+            let cell = Cell::splat(3, crate::cell::CellLayerType::Floor);
+            assert_eq!(cell.coordinate, Coordinate::new(3, 3));
             assert_eq!(cell.cell_type(), crate::cell::CellLayerType::Floor);
             assert!(cell.is_spawnable());
             assert!(cell.is_walkable());
@@ -282,8 +281,8 @@ mod tests {
 
         #[test]
         fn it_creates_cell_properly() {
-            let cell = Cell::<i32>::splatted_room_floor(3);
-            assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
+            let cell = Cell::splatted_room_floor(3);
+            assert_eq!(cell.coordinate, Coordinate::new(3, 3));
             assert_eq!(cell.cell_type(), crate::cell::CellLayerType::RoomFloor);
             assert!(cell.is_spawnable());
             assert!(cell.is_walkable());
@@ -295,8 +294,8 @@ mod tests {
 
         #[test]
         fn it_creates_cell_properly() {
-            let cell = Cell::<i32>::room_floor(3, 3);
-            assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
+            let cell = Cell::room_floor(3, 3);
+            assert_eq!(cell.coordinate, Coordinate::new(3, 3));
             assert_eq!(cell.cell_type(), crate::cell::CellLayerType::RoomFloor);
             assert!(cell.is_spawnable());
             assert!(cell.is_walkable());
@@ -308,8 +307,8 @@ mod tests {
 
         #[test]
         fn it_creates_cell_properly() {
-            let cell = Cell::<i32>::splatted_room_wall(3);
-            assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
+            let cell = Cell::splatted_room_wall(3);
+            assert_eq!(cell.coordinate, Coordinate::new(3, 3));
             assert_eq!(cell.cell_type(), crate::cell::CellLayerType::RoomWall);
             assert!(!cell.is_spawnable());
             assert!(!cell.is_walkable());
@@ -321,8 +320,8 @@ mod tests {
 
         #[test]
         fn it_creates_cell_properly() {
-            let cell = Cell::<i32>::room_wall(3, 3);
-            assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
+            let cell = Cell::room_wall(3, 3);
+            assert_eq!(cell.coordinate, Coordinate::new(3, 3));
             assert_eq!(cell.cell_type(), crate::cell::CellLayerType::RoomWall);
             assert!(!cell.is_spawnable());
             assert!(!cell.is_walkable());
@@ -334,8 +333,8 @@ mod tests {
 
         #[test]
         fn it_creates_cell_properly() {
-            let cell = Cell::<i32>::room_door(3, 3);
-            assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
+            let cell = Cell::room_door(3, 3);
+            assert_eq!(cell.coordinate, Coordinate::new(3, 3));
             assert_eq!(cell.cell_type(), crate::cell::CellLayerType::Door);
             assert!(!cell.is_spawnable());
             assert!(cell.is_walkable());
@@ -347,8 +346,8 @@ mod tests {
 
         #[test]
         fn it_creates_cell_properly() {
-            let cell = Cell::<i32>::outer_wall(3, 3);
-            assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
+            let cell = Cell::outer_wall(3, 3);
+            assert_eq!(cell.coordinate, Coordinate::new(3, 3));
             assert_eq!(cell.cell_type(), crate::cell::CellLayerType::OuterWall);
             assert!(!cell.is_spawnable());
             assert!(!cell.is_walkable());
@@ -360,8 +359,8 @@ mod tests {
 
         #[test]
         fn it_creates_cell_properly() {
-            let cell = Cell::<i32>::empty_cell(3, 3);
-            assert_eq!(cell.coordinate, Coordinate::<i32>::new(3, 3));
+            let cell = Cell::empty_cell(3, 3);
+            assert_eq!(cell.coordinate, Coordinate::new(3, 3));
             assert_eq!(cell.cell_type(), crate::cell::CellLayerType::Empty);
             assert!(!cell.is_spawnable());
             assert!(!cell.is_walkable());

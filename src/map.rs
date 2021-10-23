@@ -1,7 +1,7 @@
 use crate::{coordinate::Coordinate, grid::Grid};
 
 pub struct TopDownMap {
-    pub grid: Grid<i32>,
+    pub grid: Grid,
     pub room_count: usize,
-    pub entry_coordinate: Coordinate<i32>,
+    pub entry_coordinate: Coordinate,
 }

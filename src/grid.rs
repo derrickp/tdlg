@@ -1,22 +1,22 @@
 use rand::prelude::*;
 use rand_pcg::Pcg64;
 use rand_seeder::Seeder;
-use std::{collections::HashMap, hash::Hash};
+use std::collections::HashMap;
 
 use crate::{cell::Cell, coordinate::Coordinate, room::Room};
 
-pub struct Grid<T: Copy + std::ops::Add<Output = T> + Eq + Hash + Ord> {
-    pub cells: HashMap<Coordinate<T>, Cell<T>>,
+pub struct Grid {
+    pub cells: HashMap<Coordinate, Cell>,
     pub size: usize,
     pub seed: &'static str,
 }
 
-impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash + Ord> Grid<T> {
-    fn add_cell(&mut self, cell: Cell<T>) {
+impl Grid {
+    fn add_cell(&mut self, cell: Cell) {
         self.cells.insert(cell.coordinate, cell);
     }
 
-    pub fn add_room(&mut self, room: Room<T>) {
+    pub fn add_room(&mut self, room: Room) {
         for cell in room.cells.iter() {
             if let Some(grid_cell) = self.cells.get_mut(&cell.coordinate) {
                 grid_cell.clear_contents();
@@ -31,7 +31,7 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash + Ord> Grid<T> {
         }
     }
 
-    pub fn is_cell_empty(&self, coordinate: &Coordinate<T>) -> bool {
+    pub fn is_cell_empty(&self, coordinate: &Coordinate) -> bool {
         let cell = self.cells.get(coordinate);
         match cell {
             Some(c) => c.is_empty(),
@@ -39,10 +39,10 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash + Ord> Grid<T> {
         }
     }
 
-    pub fn random_spawnable_coordinate(&mut self) -> Option<Coordinate<T>> {
+    pub fn random_spawnable_coordinate(&mut self) -> Option<Coordinate> {
         let mut rng: Pcg64 = Seeder::from(self.seed).make_rng();
 
-        let mut spawnable_cells: Vec<Coordinate<T>> = self
+        let mut spawnable_cells: Vec<Coordinate> = self
             .cells
             .iter()
             .filter_map(|(coordinate, cell)| {
@@ -57,9 +57,7 @@ impl<T: Copy + std::ops::Add<Output = T> + Eq + Hash + Ord> Grid<T> {
         let index: usize = rng.gen_range(0..spawnable_cells.len());
         spawnable_cells.get(index).copied()
     }
-}
 
-impl Grid<i32> {
     pub fn create_outer_wall(&mut self) {
         // X rows
         for x in -1..=self.size as i32 {
