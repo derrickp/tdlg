@@ -1,4 +1,4 @@
-use crate::cell::{layer::LayerType, Cell};
+use crate::{cells::cell::Cell, cells::layer::LayerType};
 
 #[derive(Clone)]
 pub struct Room {
@@ -117,10 +117,8 @@ impl Room {
 
 #[cfg(test)]
 mod tests {
-    use crate::cell::{layer::LayerType, Cell};
+    use crate::{cells::cell::Cell, cells::layer::LayerType, room::Room};
     use std::fs;
-
-    use crate::room::Room;
 
     #[test]
     fn translate_moves_room() {
@@ -170,10 +168,7 @@ mod tests {
         );
 
         assert_eq!(cell_1_2.layers.len(), 2);
-        assert_eq!(
-            cell_1_2.cell_type_at_layer(1).unwrap(),
-            LayerType::Rubble
-        );
+        assert_eq!(cell_1_2.cell_type_at_layer(1).unwrap(), LayerType::Rubble);
     }
 
     #[test]

@@ -3,7 +3,7 @@ use rand_pcg::Pcg64;
 use rand_seeder::Seeder;
 use std::collections::HashMap;
 
-use crate::{cell::Cell, coordinate::Coordinate, room::Room};
+use crate::{cells::cell::Cell, coordinate::Coordinate, room::Room};
 
 pub struct Grid {
     pub cells: HashMap<Coordinate, Cell>,

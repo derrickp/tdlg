@@ -1,8 +1,4 @@
-pub mod layer;
-
-use crate::coordinate::Coordinate;
-
-use self::layer::LayerType;
+use crate::{cells::layer::LayerType, coordinate::Coordinate};
 
 #[derive(PartialEq, Eq, Clone)]
 pub struct Cell {
@@ -139,7 +135,7 @@ impl Cell {
 #[cfg(test)]
 mod tests {
     mod set_cell_type {
-        use crate::{cell::Cell, coordinate::Coordinate};
+        use crate::{cells::cell::Cell, coordinate::Coordinate};
 
         #[test]
         fn it_changes_the_cell_type() {
@@ -147,8 +143,8 @@ mod tests {
                 coordinate: Coordinate::splat(2),
                 layers: vec![],
             };
-            cell.set_cell_type(crate::cell::LayerType::RoomFloor);
-            assert_eq!(cell.cell_type(), crate::cell::LayerType::RoomFloor);
+            cell.set_cell_type(crate::cells::layer::LayerType::RoomFloor);
+            assert_eq!(cell.cell_type(), crate::cells::layer::LayerType::RoomFloor);
         }
 
         #[test]
@@ -157,7 +153,7 @@ mod tests {
                 coordinate: Coordinate::splat(2),
                 layers: vec![],
             };
-            cell.set_cell_type(crate::cell::LayerType::RoomFloor);
+            cell.set_cell_type(crate::cells::layer::LayerType::RoomFloor);
             assert!(cell.is_spawnable());
             assert!(cell.is_walkable());
         }
@@ -168,7 +164,7 @@ mod tests {
                 coordinate: Coordinate::splat(2),
                 layers: vec![],
             };
-            cell.set_cell_type(crate::cell::LayerType::Floor);
+            cell.set_cell_type(crate::cells::layer::LayerType::Floor);
             assert!(cell.is_spawnable());
             assert!(cell.is_walkable());
         }
@@ -179,14 +175,14 @@ mod tests {
                 coordinate: Coordinate::splat(2),
                 layers: vec![],
             };
-            cell.set_cell_type(crate::cell::LayerType::Door);
+            cell.set_cell_type(crate::cells::layer::LayerType::Door);
             assert!(!cell.is_spawnable());
             assert!(cell.is_walkable());
         }
     }
 
     mod translate {
-        use crate::{cell::Cell, coordinate::Coordinate};
+        use crate::{cells::cell::Cell, coordinate::Coordinate};
 
         #[test]
         fn it_updates_cell_coordinates() {
@@ -203,144 +199,144 @@ mod tests {
         fn it_keeps_rest_of_cell() {
             let cell = Cell {
                 coordinate: Coordinate::splat(2),
-                layers: vec![crate::cell::LayerType::Floor],
+                layers: vec![crate::cells::layer::LayerType::Floor],
             };
             let new_cell = cell.translate(3, 3);
 
-            assert_eq!(new_cell.cell_type(), crate::cell::LayerType::Floor);
+            assert_eq!(new_cell.cell_type(), crate::cells::layer::LayerType::Floor);
             assert!(new_cell.is_spawnable());
             assert!(new_cell.is_walkable());
         }
     }
 
     mod is_at_location {
-        use crate::cell::Cell;
+        use crate::cells::cell::Cell;
 
         #[test]
         fn it_returns_true_when_same_coordinates() {
-            let cell = Cell::splat(0, crate::cell::LayerType::Empty);
+            let cell = Cell::splat(0, crate::cells::layer::LayerType::Empty);
             assert!(cell.is_at_location(0, 0));
         }
 
         #[test]
         fn it_returns_false_when_same_coordinates() {
-            let cell = Cell::splat(0, crate::cell::LayerType::Empty);
+            let cell = Cell::splat(0, crate::cells::layer::LayerType::Empty);
             assert!(!cell.is_at_location(1, 0));
         }
     }
 
     mod new {
-        use crate::{cell::Cell, coordinate::Coordinate};
+        use crate::{cells::cell::Cell, coordinate::Coordinate};
 
         #[test]
         fn it_creates_cell_properly() {
-            let cell = Cell::new(3, 3, crate::cell::LayerType::Floor);
+            let cell = Cell::new(3, 3, crate::cells::layer::LayerType::Floor);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::LayerType::Floor);
+            assert_eq!(cell.cell_type(), crate::cells::layer::LayerType::Floor);
             assert!(cell.is_spawnable());
             assert!(cell.is_walkable());
         }
     }
 
     mod splat {
-        use crate::{cell::Cell, coordinate::Coordinate};
+        use crate::{cells::cell::Cell, coordinate::Coordinate};
 
         #[test]
         fn it_creates_cell_properly() {
-            let cell = Cell::splat(3, crate::cell::LayerType::Floor);
+            let cell = Cell::splat(3, crate::cells::layer::LayerType::Floor);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::LayerType::Floor);
+            assert_eq!(cell.cell_type(), crate::cells::layer::LayerType::Floor);
             assert!(cell.is_spawnable());
             assert!(cell.is_walkable());
         }
     }
 
     mod splatted_room_floor {
-        use crate::{cell::Cell, coordinate::Coordinate};
+        use crate::{cells::cell::Cell, coordinate::Coordinate};
 
         #[test]
         fn it_creates_cell_properly() {
             let cell = Cell::splatted_room_floor(3);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::LayerType::RoomFloor);
+            assert_eq!(cell.cell_type(), crate::cells::layer::LayerType::RoomFloor);
             assert!(cell.is_spawnable());
             assert!(cell.is_walkable());
         }
     }
 
     mod room_floor {
-        use crate::{cell::Cell, coordinate::Coordinate};
+        use crate::{cells::cell::Cell, coordinate::Coordinate};
 
         #[test]
         fn it_creates_cell_properly() {
             let cell = Cell::room_floor(3, 3);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::LayerType::RoomFloor);
+            assert_eq!(cell.cell_type(), crate::cells::layer::LayerType::RoomFloor);
             assert!(cell.is_spawnable());
             assert!(cell.is_walkable());
         }
     }
 
     mod splatted_room_wall {
-        use crate::{cell::Cell, coordinate::Coordinate};
+        use crate::{cells::cell::Cell, coordinate::Coordinate};
 
         #[test]
         fn it_creates_cell_properly() {
             let cell = Cell::splatted_room_wall(3);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::LayerType::RoomWall);
+            assert_eq!(cell.cell_type(), crate::cells::layer::LayerType::RoomWall);
             assert!(!cell.is_spawnable());
             assert!(!cell.is_walkable());
         }
     }
 
     mod room_wall {
-        use crate::{cell::Cell, coordinate::Coordinate};
+        use crate::{cells::cell::Cell, coordinate::Coordinate};
 
         #[test]
         fn it_creates_cell_properly() {
             let cell = Cell::room_wall(3, 3);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::LayerType::RoomWall);
+            assert_eq!(cell.cell_type(), crate::cells::layer::LayerType::RoomWall);
             assert!(!cell.is_spawnable());
             assert!(!cell.is_walkable());
         }
     }
 
     mod room_door {
-        use crate::{cell::Cell, coordinate::Coordinate};
+        use crate::{cells::cell::Cell, coordinate::Coordinate};
 
         #[test]
         fn it_creates_cell_properly() {
             let cell = Cell::room_door(3, 3);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::LayerType::Door);
+            assert_eq!(cell.cell_type(), crate::cells::layer::LayerType::Door);
             assert!(!cell.is_spawnable());
             assert!(cell.is_walkable());
         }
     }
 
     mod outer_wall {
-        use crate::{cell::Cell, coordinate::Coordinate};
+        use crate::{cells::cell::Cell, coordinate::Coordinate};
 
         #[test]
         fn it_creates_cell_properly() {
             let cell = Cell::outer_wall(3, 3);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::LayerType::OuterWall);
+            assert_eq!(cell.cell_type(), crate::cells::layer::LayerType::OuterWall);
             assert!(!cell.is_spawnable());
             assert!(!cell.is_walkable());
         }
     }
 
     mod empty_cell {
-        use crate::{cell::Cell, coordinate::Coordinate};
+        use crate::{cells::cell::Cell, coordinate::Coordinate};
 
         #[test]
         fn it_creates_cell_properly() {
             let cell = Cell::empty_cell(3, 3);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::LayerType::Empty);
+            assert_eq!(cell.cell_type(), crate::cells::layer::LayerType::Empty);
             assert!(!cell.is_spawnable());
             assert!(!cell.is_walkable());
         }

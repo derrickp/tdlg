@@ -1,4 +1,4 @@
-pub mod cell;
+pub mod cells;
 pub mod coordinate;
 pub mod generator;
 pub mod grid;
