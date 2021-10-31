@@ -1,4 +1,4 @@
-use crate::cell::{Cell, CellLayerType};
+use crate::cell::{layer::LayerType, Cell};
 
 #[derive(Clone)]
 pub struct Room {
@@ -100,29 +100,27 @@ impl Room {
         Cell::new(x, y, layer)
     }
 
-    fn build_cell_layer(c: char) -> CellLayerType {
+    fn build_cell_layer(c: char) -> LayerType {
         match c {
-            'w' => CellLayerType::RoomWall,
-            'f' => CellLayerType::RoomFloor,
-            'd' => CellLayerType::Door,
-            'r' => CellLayerType::Rubble,
-            't' => CellLayerType::Table,
-            'l' => CellLayerType::Floor,
-            'e' => CellLayerType::Empty,
-            'o' => CellLayerType::OuterWall,
-            _ => CellLayerType::Empty,
+            'w' => LayerType::RoomWall,
+            'f' => LayerType::RoomFloor,
+            'd' => LayerType::Door,
+            'r' => LayerType::Rubble,
+            't' => LayerType::Table,
+            'l' => LayerType::Floor,
+            'e' => LayerType::Empty,
+            'o' => LayerType::OuterWall,
+            _ => LayerType::Empty,
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::cell::{layer::LayerType, Cell};
     use std::fs;
 
-    use crate::{
-        cell::{Cell, CellLayerType},
-        room::Room,
-    };
+    use crate::room::Room;
 
     #[test]
     fn translate_moves_room() {
@@ -168,13 +166,13 @@ mod tests {
         assert_eq!(cell_1_1.layers.len(), 1);
         assert_eq!(
             cell_1_1.cell_type_at_layer(0).unwrap(),
-            CellLayerType::RoomFloor
+            LayerType::RoomFloor
         );
 
         assert_eq!(cell_1_2.layers.len(), 2);
         assert_eq!(
             cell_1_2.cell_type_at_layer(1).unwrap(),
-            CellLayerType::Rubble
+            LayerType::Rubble
         );
     }
 
@@ -193,43 +191,43 @@ mod tests {
 
         // Bottom wall
         let cell_0_0 = room.cell_at(0, 0).unwrap();
-        assert_eq!(cell_0_0.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_0_0.cell_type(), LayerType::RoomWall);
         let cell_1_0 = room.cell_at(1, 0).unwrap();
-        assert_eq!(cell_1_0.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_1_0.cell_type(), LayerType::RoomWall);
         let cell_2_0 = room.cell_at(2, 0).unwrap();
-        assert_eq!(cell_2_0.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_2_0.cell_type(), LayerType::RoomWall);
         let cell_3_0 = room.cell_at(3, 0).unwrap();
-        assert_eq!(cell_3_0.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_3_0.cell_type(), LayerType::RoomWall);
 
         // Lower room
         let cell_0_1 = room.cell_at(0, 1).unwrap();
-        assert_eq!(cell_0_1.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_0_1.cell_type(), LayerType::RoomWall);
         let cell_1_1 = room.cell_at(1, 1).unwrap();
-        assert_eq!(cell_1_1.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_1_1.cell_type(), LayerType::RoomFloor);
         let cell_2_1 = room.cell_at(2, 1).unwrap();
-        assert_eq!(cell_2_1.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_2_1.cell_type(), LayerType::RoomFloor);
         let cell_3_1 = room.cell_at(3, 1).unwrap();
-        assert_eq!(cell_3_1.cell_type(), CellLayerType::Door);
+        assert_eq!(cell_3_1.cell_type(), LayerType::Door);
 
         // Upper room
         let cell_0_2 = room.cell_at(0, 2).unwrap();
-        assert_eq!(cell_0_2.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_0_2.cell_type(), LayerType::RoomWall);
         let cell_1_2 = room.cell_at(1, 2).unwrap();
-        assert_eq!(cell_1_2.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_1_2.cell_type(), LayerType::RoomFloor);
         let cell_2_2 = room.cell_at(2, 2).unwrap();
-        assert_eq!(cell_2_2.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_2_2.cell_type(), LayerType::RoomFloor);
         let cell_3_2 = room.cell_at(3, 2).unwrap();
-        assert_eq!(cell_3_2.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_3_2.cell_type(), LayerType::RoomWall);
 
         // Top wall
         let cell_0_3 = room.cell_at(0, 3).unwrap();
-        assert_eq!(cell_0_3.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_0_3.cell_type(), LayerType::RoomWall);
         let cell_1_3 = room.cell_at(1, 3).unwrap();
-        assert_eq!(cell_1_3.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_1_3.cell_type(), LayerType::RoomWall);
         let cell_2_3 = room.cell_at(2, 3).unwrap();
-        assert_eq!(cell_2_3.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_2_3.cell_type(), LayerType::RoomWall);
         let cell_3_3 = room.cell_at(3, 3).unwrap();
-        assert_eq!(cell_3_3.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_3_3.cell_type(), LayerType::RoomWall);
     }
 
     #[test]
@@ -240,82 +238,82 @@ mod tests {
         assert_eq!(room.cells.len(), 36);
 
         let cell_0_0 = room.cell_at(0, 0).unwrap();
-        assert_eq!(cell_0_0.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_0_0.cell_type(), LayerType::RoomWall);
         let cell_1_0 = room.cell_at(1, 0).unwrap();
-        assert_eq!(cell_1_0.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_1_0.cell_type(), LayerType::RoomWall);
         let cell_2_0 = room.cell_at(2, 0).unwrap();
-        assert_eq!(cell_2_0.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_2_0.cell_type(), LayerType::RoomWall);
 
         let cell_0_1 = room.cell_at(0, 1).unwrap();
-        assert_eq!(cell_0_1.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_0_1.cell_type(), LayerType::RoomWall);
         let cell_1_1 = room.cell_at(1, 1).unwrap();
-        assert_eq!(cell_1_1.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_1_1.cell_type(), LayerType::RoomFloor);
         let cell_2_1 = room.cell_at(2, 1).unwrap();
-        assert_eq!(cell_2_1.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_2_1.cell_type(), LayerType::RoomFloor);
         let cell_3_1 = room.cell_at(3, 1).unwrap();
-        assert_eq!(cell_3_1.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_3_1.cell_type(), LayerType::RoomWall);
 
         let cell_0_2 = room.cell_at(0, 2).unwrap();
-        assert_eq!(cell_0_2.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_0_2.cell_type(), LayerType::RoomWall);
         let cell_1_2 = room.cell_at(1, 2).unwrap();
-        assert_eq!(cell_1_2.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_1_2.cell_type(), LayerType::RoomFloor);
         let cell_2_2 = room.cell_at(2, 2).unwrap();
-        assert_eq!(cell_2_2.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_2_2.cell_type(), LayerType::RoomFloor);
         let cell_3_2 = room.cell_at(3, 2).unwrap();
-        assert_eq!(cell_3_2.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_3_2.cell_type(), LayerType::RoomWall);
         let cell_4_2 = room.cell_at(3, 2).unwrap();
-        assert_eq!(cell_4_2.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_4_2.cell_type(), LayerType::RoomWall);
 
         let cell_0_3 = room.cell_at(0, 3).unwrap();
-        assert_eq!(cell_0_3.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_0_3.cell_type(), LayerType::RoomWall);
         let cell_1_3 = room.cell_at(1, 3).unwrap();
-        assert_eq!(cell_1_3.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_1_3.cell_type(), LayerType::RoomFloor);
         let cell_2_3 = room.cell_at(2, 3).unwrap();
-        assert_eq!(cell_2_3.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_2_3.cell_type(), LayerType::RoomFloor);
         let cell_3_3 = room.cell_at(3, 3).unwrap();
-        assert_eq!(cell_3_3.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_3_3.cell_type(), LayerType::RoomFloor);
         let cell_4_3 = room.cell_at(4, 3).unwrap();
-        assert_eq!(cell_4_3.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_4_3.cell_type(), LayerType::RoomWall);
         let cell_5_3 = room.cell_at(5, 3).unwrap();
-        assert_eq!(cell_5_3.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_5_3.cell_type(), LayerType::RoomWall);
 
         let cell_0_4 = room.cell_at(0, 4).unwrap();
-        assert_eq!(cell_0_4.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_0_4.cell_type(), LayerType::RoomWall);
         let cell_1_4 = room.cell_at(1, 4).unwrap();
-        assert_eq!(cell_1_4.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_1_4.cell_type(), LayerType::RoomFloor);
         let cell_2_4 = room.cell_at(2, 4).unwrap();
-        assert_eq!(cell_2_4.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_2_4.cell_type(), LayerType::RoomFloor);
         let cell_3_4 = room.cell_at(3, 4).unwrap();
-        assert_eq!(cell_3_4.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_3_4.cell_type(), LayerType::RoomFloor);
         let cell_4_4 = room.cell_at(4, 4).unwrap();
-        assert_eq!(cell_4_4.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_4_4.cell_type(), LayerType::RoomFloor);
         let cell_5_4 = room.cell_at(5, 4).unwrap();
-        assert_eq!(cell_5_4.cell_type(), CellLayerType::Door);
+        assert_eq!(cell_5_4.cell_type(), LayerType::Door);
 
         let cell_0_5 = room.cell_at(0, 5).unwrap();
-        assert_eq!(cell_0_5.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_0_5.cell_type(), LayerType::RoomWall);
         let cell_1_5 = room.cell_at(1, 5).unwrap();
-        assert_eq!(cell_1_5.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_1_5.cell_type(), LayerType::RoomFloor);
         let cell_2_5 = room.cell_at(2, 5).unwrap();
-        assert_eq!(cell_2_5.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_2_5.cell_type(), LayerType::RoomFloor);
         let cell_3_5 = room.cell_at(3, 5).unwrap();
-        assert_eq!(cell_3_5.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_3_5.cell_type(), LayerType::RoomFloor);
         let cell_4_5 = room.cell_at(4, 5).unwrap();
-        assert_eq!(cell_4_5.cell_type(), CellLayerType::RoomFloor);
+        assert_eq!(cell_4_5.cell_type(), LayerType::RoomFloor);
         let cell_5_5 = room.cell_at(5, 5).unwrap();
-        assert_eq!(cell_5_5.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_5_5.cell_type(), LayerType::RoomWall);
 
         let cell_0_6 = room.cell_at(0, 6).unwrap();
-        assert_eq!(cell_0_6.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_0_6.cell_type(), LayerType::RoomWall);
         let cell_1_6 = room.cell_at(1, 6).unwrap();
-        assert_eq!(cell_1_6.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_1_6.cell_type(), LayerType::RoomWall);
         let cell_2_6 = room.cell_at(2, 6).unwrap();
-        assert_eq!(cell_2_6.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_2_6.cell_type(), LayerType::RoomWall);
         let cell_3_6 = room.cell_at(3, 6).unwrap();
-        assert_eq!(cell_3_6.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_3_6.cell_type(), LayerType::RoomWall);
         let cell_4_6 = room.cell_at(4, 6).unwrap();
-        assert_eq!(cell_4_6.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_4_6.cell_type(), LayerType::RoomWall);
         let cell_5_6 = room.cell_at(5, 6).unwrap();
-        assert_eq!(cell_5_6.cell_type(), CellLayerType::RoomWall);
+        assert_eq!(cell_5_6.cell_type(), LayerType::RoomWall);
     }
 }

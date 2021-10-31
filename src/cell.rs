@@ -1,34 +1,13 @@
+pub mod layer;
+
 use crate::coordinate::Coordinate;
 
-#[derive(PartialEq, Eq, Copy, Clone, Debug)]
-pub enum CellLayerType {
-    Door,
-    Empty,
-    Floor,
-    OuterWall,
-    RoomFloor,
-    RoomWall,
-    Rubble,
-    Table,
-}
-
-impl CellLayerType {
-    pub fn is_walkable(&self) -> bool {
-        self == &CellLayerType::Door
-            || self == &CellLayerType::RoomFloor
-            || self == &CellLayerType::Floor
-            || self == &CellLayerType::Rubble
-    }
-
-    pub fn is_spawnable(&self) -> bool {
-        self == &CellLayerType::RoomFloor || self == &CellLayerType::Floor
-    }
-}
+use self::layer::LayerType;
 
 #[derive(PartialEq, Eq, Clone)]
 pub struct Cell {
     pub coordinate: Coordinate,
-    pub layers: Vec<CellLayerType>,
+    pub layers: Vec<LayerType>,
 }
 
 impl Cell {
@@ -37,27 +16,27 @@ impl Cell {
     }
 
     pub fn is_empty(&self) -> bool {
-        self.cell_type() == CellLayerType::Empty
+        self.cell_type() == LayerType::Empty
     }
 
     pub fn set_to_floor(&mut self) {
         self.layers.clear();
-        self.layers.push(CellLayerType::Floor);
+        self.layers.push(LayerType::Floor);
     }
 
     pub fn is_at_location(&self, x: i32, y: i32) -> bool {
         self.coordinate.x == x && self.coordinate.y == y
     }
 
-    pub fn cell_type(&self) -> CellLayerType {
+    pub fn cell_type(&self) -> LayerType {
         if self.layers.is_empty() {
-            return CellLayerType::Empty;
+            return LayerType::Empty;
         }
 
         self.cell_type_at_layer(0).unwrap()
     }
 
-    pub fn cell_type_at_layer(&self, layer_index: usize) -> Option<CellLayerType> {
+    pub fn cell_type_at_layer(&self, layer_index: usize) -> Option<LayerType> {
         if let Some(cell_type) = self.layers.get(layer_index) {
             return Some(*cell_type);
         }
@@ -65,20 +44,20 @@ impl Cell {
         None
     }
 
-    pub fn add_layer(&mut self, layer: &CellLayerType) {
+    pub fn add_layer(&mut self, layer: &LayerType) {
         // We don't need empty cells
-        if layer != &CellLayerType::Empty {
+        if layer != &LayerType::Empty {
             self.layers.push(*layer);
         }
     }
 
-    pub fn add_cell_layers(&mut self, layers: &[CellLayerType]) {
+    pub fn add_cell_layers(&mut self, layers: &[LayerType]) {
         for layer in layers {
             self.layers.push(*layer)
         }
     }
 
-    pub fn set_cell_type(&mut self, cell_type: CellLayerType) {
+    pub fn set_cell_type(&mut self, cell_type: LayerType) {
         if !self.layers.is_empty() {
             self.layers.clear()
         }
@@ -108,8 +87,8 @@ impl Cell {
         }
     }
 
-    pub fn new(x: i32, y: i32, cell_type: CellLayerType) -> Self {
-        let layers: Vec<CellLayerType> = if cell_type != CellLayerType::Empty {
+    pub fn new(x: i32, y: i32, cell_type: LayerType) -> Self {
+        let layers: Vec<LayerType> = if cell_type != LayerType::Empty {
             vec![cell_type]
         } else {
             Vec::new()
@@ -121,7 +100,7 @@ impl Cell {
         }
     }
 
-    pub fn splat(value: i32, cell_type: CellLayerType) -> Self {
+    pub fn splat(value: i32, cell_type: LayerType) -> Self {
         Self {
             coordinate: Coordinate::splat(value),
             layers: vec![cell_type],
@@ -129,31 +108,31 @@ impl Cell {
     }
 
     pub fn splatted_room_wall(value: i32) -> Self {
-        Self::splat(value, CellLayerType::RoomWall)
+        Self::splat(value, LayerType::RoomWall)
     }
 
     pub fn room_wall(x: i32, y: i32) -> Self {
-        Self::new(x, y, CellLayerType::RoomWall)
+        Self::new(x, y, LayerType::RoomWall)
     }
 
     pub fn splatted_room_floor(value: i32) -> Self {
-        Self::splat(value, CellLayerType::RoomFloor)
+        Self::splat(value, LayerType::RoomFloor)
     }
 
     pub fn room_floor(x: i32, y: i32) -> Self {
-        Self::new(x, y, CellLayerType::RoomFloor)
+        Self::new(x, y, LayerType::RoomFloor)
     }
 
     pub fn room_door(x: i32, y: i32) -> Self {
-        Self::new(x, y, CellLayerType::Door)
+        Self::new(x, y, LayerType::Door)
     }
 
     pub fn outer_wall(x: i32, y: i32) -> Self {
-        Self::new(x, y, CellLayerType::OuterWall)
+        Self::new(x, y, LayerType::OuterWall)
     }
 
     pub fn empty_cell(x: i32, y: i32) -> Self {
-        Self::new(x, y, CellLayerType::Empty)
+        Self::new(x, y, LayerType::Empty)
     }
 }
 
@@ -168,8 +147,8 @@ mod tests {
                 coordinate: Coordinate::splat(2),
                 layers: vec![],
             };
-            cell.set_cell_type(crate::cell::CellLayerType::RoomFloor);
-            assert_eq!(cell.cell_type(), crate::cell::CellLayerType::RoomFloor);
+            cell.set_cell_type(crate::cell::LayerType::RoomFloor);
+            assert_eq!(cell.cell_type(), crate::cell::LayerType::RoomFloor);
         }
 
         #[test]
@@ -178,7 +157,7 @@ mod tests {
                 coordinate: Coordinate::splat(2),
                 layers: vec![],
             };
-            cell.set_cell_type(crate::cell::CellLayerType::RoomFloor);
+            cell.set_cell_type(crate::cell::LayerType::RoomFloor);
             assert!(cell.is_spawnable());
             assert!(cell.is_walkable());
         }
@@ -189,7 +168,7 @@ mod tests {
                 coordinate: Coordinate::splat(2),
                 layers: vec![],
             };
-            cell.set_cell_type(crate::cell::CellLayerType::Floor);
+            cell.set_cell_type(crate::cell::LayerType::Floor);
             assert!(cell.is_spawnable());
             assert!(cell.is_walkable());
         }
@@ -200,7 +179,7 @@ mod tests {
                 coordinate: Coordinate::splat(2),
                 layers: vec![],
             };
-            cell.set_cell_type(crate::cell::CellLayerType::Door);
+            cell.set_cell_type(crate::cell::LayerType::Door);
             assert!(!cell.is_spawnable());
             assert!(cell.is_walkable());
         }
@@ -224,11 +203,11 @@ mod tests {
         fn it_keeps_rest_of_cell() {
             let cell = Cell {
                 coordinate: Coordinate::splat(2),
-                layers: vec![crate::cell::CellLayerType::Floor],
+                layers: vec![crate::cell::LayerType::Floor],
             };
             let new_cell = cell.translate(3, 3);
 
-            assert_eq!(new_cell.cell_type(), crate::cell::CellLayerType::Floor);
+            assert_eq!(new_cell.cell_type(), crate::cell::LayerType::Floor);
             assert!(new_cell.is_spawnable());
             assert!(new_cell.is_walkable());
         }
@@ -239,13 +218,13 @@ mod tests {
 
         #[test]
         fn it_returns_true_when_same_coordinates() {
-            let cell = Cell::splat(0, crate::cell::CellLayerType::Empty);
+            let cell = Cell::splat(0, crate::cell::LayerType::Empty);
             assert!(cell.is_at_location(0, 0));
         }
 
         #[test]
         fn it_returns_false_when_same_coordinates() {
-            let cell = Cell::splat(0, crate::cell::CellLayerType::Empty);
+            let cell = Cell::splat(0, crate::cell::LayerType::Empty);
             assert!(!cell.is_at_location(1, 0));
         }
     }
@@ -255,9 +234,9 @@ mod tests {
 
         #[test]
         fn it_creates_cell_properly() {
-            let cell = Cell::new(3, 3, crate::cell::CellLayerType::Floor);
+            let cell = Cell::new(3, 3, crate::cell::LayerType::Floor);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::CellLayerType::Floor);
+            assert_eq!(cell.cell_type(), crate::cell::LayerType::Floor);
             assert!(cell.is_spawnable());
             assert!(cell.is_walkable());
         }
@@ -268,9 +247,9 @@ mod tests {
 
         #[test]
         fn it_creates_cell_properly() {
-            let cell = Cell::splat(3, crate::cell::CellLayerType::Floor);
+            let cell = Cell::splat(3, crate::cell::LayerType::Floor);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::CellLayerType::Floor);
+            assert_eq!(cell.cell_type(), crate::cell::LayerType::Floor);
             assert!(cell.is_spawnable());
             assert!(cell.is_walkable());
         }
@@ -283,7 +262,7 @@ mod tests {
         fn it_creates_cell_properly() {
             let cell = Cell::splatted_room_floor(3);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::CellLayerType::RoomFloor);
+            assert_eq!(cell.cell_type(), crate::cell::LayerType::RoomFloor);
             assert!(cell.is_spawnable());
             assert!(cell.is_walkable());
         }
@@ -296,7 +275,7 @@ mod tests {
         fn it_creates_cell_properly() {
             let cell = Cell::room_floor(3, 3);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::CellLayerType::RoomFloor);
+            assert_eq!(cell.cell_type(), crate::cell::LayerType::RoomFloor);
             assert!(cell.is_spawnable());
             assert!(cell.is_walkable());
         }
@@ -309,7 +288,7 @@ mod tests {
         fn it_creates_cell_properly() {
             let cell = Cell::splatted_room_wall(3);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::CellLayerType::RoomWall);
+            assert_eq!(cell.cell_type(), crate::cell::LayerType::RoomWall);
             assert!(!cell.is_spawnable());
             assert!(!cell.is_walkable());
         }
@@ -322,7 +301,7 @@ mod tests {
         fn it_creates_cell_properly() {
             let cell = Cell::room_wall(3, 3);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::CellLayerType::RoomWall);
+            assert_eq!(cell.cell_type(), crate::cell::LayerType::RoomWall);
             assert!(!cell.is_spawnable());
             assert!(!cell.is_walkable());
         }
@@ -335,7 +314,7 @@ mod tests {
         fn it_creates_cell_properly() {
             let cell = Cell::room_door(3, 3);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::CellLayerType::Door);
+            assert_eq!(cell.cell_type(), crate::cell::LayerType::Door);
             assert!(!cell.is_spawnable());
             assert!(cell.is_walkable());
         }
@@ -348,7 +327,7 @@ mod tests {
         fn it_creates_cell_properly() {
             let cell = Cell::outer_wall(3, 3);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::CellLayerType::OuterWall);
+            assert_eq!(cell.cell_type(), crate::cell::LayerType::OuterWall);
             assert!(!cell.is_spawnable());
             assert!(!cell.is_walkable());
         }
@@ -361,7 +340,7 @@ mod tests {
         fn it_creates_cell_properly() {
             let cell = Cell::empty_cell(3, 3);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cell::CellLayerType::Empty);
+            assert_eq!(cell.cell_type(), crate::cell::LayerType::Empty);
             assert!(!cell.is_spawnable());
             assert!(!cell.is_walkable());
         }
