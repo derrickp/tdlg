@@ -7,7 +7,7 @@ pub struct Generator {
     pub grid_size: usize,
     pub target_number_rooms: usize,
     pub all_room_paths: Vec<RoomPaths>,
-    pub seed: &'static str,
+    pub seed: String,
 }
 
 #[derive(Debug)]
@@ -50,9 +50,9 @@ impl Generator {
             return Err(GenerationError::room_templates_cannot_be_loaded());
         }
 
-        let mut rng: Pcg64 = Seeder::from(self.seed).make_rng();
+        let mut rng: Pcg64 = Seeder::from(self.seed.as_str()).make_rng();
 
-        let mut grid = Grid::build(self.grid_size, self.seed);
+        let mut grid = Grid::build(self.grid_size, self.seed.clone());
         let mut room_count = 0;
 
         for _ in 0..self.target_number_rooms {

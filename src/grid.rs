@@ -8,7 +8,7 @@ use crate::{cells::cell::Cell, coordinate::Coordinate, room::Room};
 pub struct Grid {
     pub cells: HashMap<Coordinate, Cell>,
     pub size: usize,
-    pub seed: &'static str,
+    pub seed: String,
 }
 
 impl Grid {
@@ -40,7 +40,7 @@ impl Grid {
     }
 
     pub fn random_spawnable_coordinate(&mut self) -> Option<Coordinate> {
-        let mut rng: Pcg64 = Seeder::from(self.seed).make_rng();
+        let mut rng: Pcg64 = Seeder::from(self.seed.as_str()).make_rng();
 
         let mut spawnable_cells: Vec<Coordinate> = self
             .cells
@@ -72,7 +72,7 @@ impl Grid {
         }
     }
 
-    pub fn build(size: usize, seed: &'static str) -> Self {
+    pub fn build(size: usize, seed: String) -> Self {
         let mut grid = Self {
             size,
             seed,
