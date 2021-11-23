@@ -58,7 +58,7 @@ impl Room {
                         .iter_mut()
                         .find(|c| c.is_at_location(x as i32, y as i32))
                     {
-                        existing_cell.add_layer(&Self::build_cell_layer(c));
+                        existing_cell.add_layer(&LayerType::from(c));
                     } else {
                         cells.push(Self::build_cell(x as i32, y as i32, c));
                     }
@@ -96,22 +96,8 @@ impl Room {
     }
 
     fn build_cell(x: i32, y: i32, c: char) -> Cell {
-        let layer = Self::build_cell_layer(c);
+        let layer = LayerType::from(c);
         Cell::new(x, y, layer)
-    }
-
-    fn build_cell_layer(c: char) -> LayerType {
-        match c {
-            'w' => LayerType::RoomWall,
-            'f' => LayerType::RoomFloor,
-            'd' => LayerType::Door,
-            'r' => LayerType::Rubble,
-            't' => LayerType::Table,
-            'l' => LayerType::Floor,
-            'e' => LayerType::Empty,
-            'o' => LayerType::OuterWall,
-            _ => LayerType::Empty,
-        }
     }
 }
 
