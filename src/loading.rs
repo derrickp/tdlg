@@ -13,7 +13,10 @@ impl RoomPaths {
     pub fn load_rooms(&self) -> Option<Vec<Room>> {
         let mut templates: Vec<Vec<String>> = Vec::new();
 
-        for entry in WalkDir::new(self.base_template_path.as_str()).into_iter().flatten() {
+        for entry in WalkDir::new(self.base_template_path.as_str())
+            .into_iter()
+            .flatten()
+        {
             if let Ok(content) = fs::read_to_string(entry.path()) {
                 let mut room_templates: Vec<Vec<String>> = Vec::new();
 
