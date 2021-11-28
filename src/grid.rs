@@ -3,12 +3,17 @@ use rand_pcg::Pcg64;
 use rand_seeder::Seeder;
 use std::collections::HashMap;
 
-use crate::{cells::cell::Cell, coordinate::Coordinate, room::Room};
+use crate::{
+    cells::{cell::Cell, layer::LayerType},
+    coordinate::Coordinate,
+    room::Room,
+};
 
 pub struct Grid {
     pub cells: HashMap<Coordinate, Cell>,
     pub size: usize,
     pub seed: String,
+    pub rng: Pcg64,
 }
 
 impl Grid {
@@ -40,8 +45,6 @@ impl Grid {
     }
 
     pub fn random_spawnable_coordinate(&mut self) -> Option<Coordinate> {
-        let mut rng: Pcg64 = Seeder::from(self.seed.as_str()).make_rng();
-
         let mut spawnable_cells: Vec<Coordinate> = self
             .cells
             .iter()
@@ -54,8 +57,25 @@ impl Grid {
             })
             .collect();
         spawnable_cells.sort_by_key(|coordinate| (coordinate.x, coordinate.y));
-        let index: usize = rng.gen_range(0..spawnable_cells.len());
+        let index: usize = self.rng.gen_range(0..spawnable_cells.len());
         spawnable_cells.get(index).copied()
+    }
+
+    pub fn bury_layer(&mut self, coordinate: &Coordinate, layer: LayerType) {
+        if let Some(cell) = self.cells.get_mut(coordinate) {
+            cell.bury_layer(&layer)
+        }
+    }
+
+    pub fn random_unblocked_coordinate(&mut self) -> Option<Coordinate> {
+        let mut coordinates: Vec<Coordinate> = self
+            .cells
+            .iter_mut()
+            .map(|(coordinate, _)| *coordinate)
+            .collect();
+        coordinates.sort_by_key(|coordinate| (coordinate.x, coordinate.y));
+        let index: usize = self.rng.gen_range(0..coordinates.len());
+        coordinates.get(index).copied()
     }
 
     pub fn create_outer_wall(&mut self) {
@@ -75,8 +95,9 @@ impl Grid {
     pub fn build(size: usize, seed: String) -> Self {
         let mut grid = Self {
             size,
-            seed,
+            seed: seed.clone(),
             cells: HashMap::default(),
+            rng: Seeder::from(seed.as_str()).make_rng(),
         };
 
         for x in 0..size as i32 {
