@@ -47,6 +47,12 @@ impl Cell {
         }
     }
 
+    pub fn bury_layer(&mut self, layer: &LayerType) {
+        if layer != &LayerType::Empty {
+            self.layers.insert(0, *layer);
+        }
+    }
+
     pub fn add_cell_layers(&mut self, layers: &[LayerType]) {
         for layer in layers {
             self.layers.push(*layer)
@@ -56,6 +62,9 @@ impl Cell {
     pub fn set_cell_type(&mut self, cell_type: LayerType) {
         if !self.layers.is_empty() {
             self.layers.clear()
+        }
+        if cell_type == LayerType::RoomWall {
+            self.layers.push(LayerType::Floor)
         }
         self.layers.push(cell_type);
     }
@@ -76,6 +85,16 @@ impl Cell {
         }
     }
 
+    pub fn is_obstructed(&self) -> bool {
+        if self.layers.is_empty() {
+            true
+        } else {
+            self.layers
+                .iter()
+                .any(|layer| layer.is_completely_obstructed())
+        }
+    }
+
     pub fn translate(&self, x: i32, y: i32) -> Self {
         Self {
             coordinate: Coordinate::new(x, y),
@@ -84,7 +103,9 @@ impl Cell {
     }
 
     pub fn new(x: i32, y: i32, cell_type: LayerType) -> Self {
-        let layers: Vec<LayerType> = if cell_type != LayerType::Empty {
+        let layers: Vec<LayerType> = if cell_type == LayerType::RoomWall {
+            vec![LayerType::Floor, cell_type]
+        } else if cell_type != LayerType::Empty {
             vec![cell_type]
         } else {
             Vec::new()
