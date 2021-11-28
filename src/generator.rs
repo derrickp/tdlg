@@ -1,4 +1,6 @@
-use crate::{grid::Grid, loading::RoomPaths, map::TopDownMap, room::Room};
+use std::ops::Range;
+
+use crate::{cells::layer::LayerType, grid::Grid, loading::RoomPaths, map::TopDownMap, room::Room};
 use rand::prelude::*;
 use rand_pcg::Pcg64;
 use rand_seeder::Seeder;
@@ -8,6 +10,17 @@ pub struct Generator {
     pub target_number_rooms: usize,
     pub all_room_paths: Vec<RoomPaths>,
     pub seed: String,
+    pub target_hidden_items: Option<HiddenItemGeneration>,
+}
+
+pub struct HiddenLayerChance {
+    pub layer_type: LayerType,
+    pub chance: Range<usize>,
+}
+
+pub struct HiddenItemGeneration {
+    pub target_num_items: usize,
+    pub item_ranges: Vec<HiddenLayerChance>,
 }
 
 #[derive(Debug)]
@@ -78,6 +91,20 @@ impl Generator {
         grid.create_outer_wall();
 
         let entry_coordinate = grid.random_spawnable_coordinate().unwrap();
+
+        if let Some(hidden_item_generation) = &self.target_hidden_items {
+            for _ in 0..hidden_item_generation.target_num_items {
+                let coordinate = grid.random_unblocked_coordinate().unwrap();
+                let chance: usize = rng.gen_range(0..100);
+                if let Some(it) = hidden_item_generation
+                    .item_ranges
+                    .iter()
+                    .find(|hidden_chance| hidden_chance.chance.contains(&chance))
+                {
+                    grid.bury_layer(&coordinate, it.layer_type)
+                }
+            }
+        }
 
         Ok(TopDownMap {
             grid,
