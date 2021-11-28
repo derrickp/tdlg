@@ -45,6 +45,12 @@ impl LayerType {
             LayerType::RoomFloor,
             LayerType::Floor,
             LayerType::RoomFloor,
+            LayerType::Rubble,
+            LayerType::CommonItem,
+            LayerType::UncommonItem,
+            LayerType::RareItem,
+            LayerType::ExoticItem,
+            LayerType::Note,
         ];
         walkable_types.contains(self)
     }
@@ -52,5 +58,9 @@ impl LayerType {
     pub fn is_spawnable(&self) -> bool {
         let spawnable_types = vec![LayerType::RoomFloor, LayerType::Floor];
         spawnable_types.contains(self)
+    }
+
+    pub fn is_completely_obstructed(&self) -> bool {
+        self == &LayerType::OuterWall || self == &LayerType::Empty
     }
 }
