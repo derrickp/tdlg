@@ -111,7 +111,11 @@ impl Generator {
             for _ in 0..item_generation.target_num_items {
                 let coordinate = grid.random_spawnable_coordinate().unwrap();
                 let chance: usize = rng.gen_range(0..100);
-                if let Some(it) = item_generation.item_ranges.iter().find(|item_chance| item_chance.chance.contains(&chance)) {
+                if let Some(it) = item_generation
+                    .item_ranges
+                    .iter()
+                    .find(|item_chance| item_chance.chance.contains(&chance))
+                {
                     grid.add_layer(&coordinate, it.layer_type)
                 }
             }

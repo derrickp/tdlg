@@ -30,11 +30,8 @@ impl Cell {
             _ => return None,
         };
 
-        let can_bury_other_layers = vec![
-            LayerType::Floor,
-            LayerType::RoomWall,
-            LayerType::RoomFloor
-        ];
+        let can_bury_other_layers =
+            vec![LayerType::Floor, LayerType::RoomWall, LayerType::RoomFloor];
 
         if can_bury_other_layers.contains(layer) {
             return Some(false);
@@ -144,9 +141,17 @@ impl Cell {
     }
 
     pub fn splat(value: i32, cell_type: LayerType) -> Self {
+        let layers: Vec<LayerType> = if cell_type == LayerType::RoomWall {
+            vec![LayerType::Floor, cell_type]
+        } else if cell_type != LayerType::Empty {
+            vec![cell_type]
+        } else {
+            Vec::new()
+        };
+
         Self {
+            layers,
             coordinate: Coordinate::splat(value),
-            layers: vec![cell_type],
         }
     }
 
@@ -331,7 +336,11 @@ mod tests {
         fn it_creates_cell_properly() {
             let cell = Cell::splatted_room_wall(3);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cells::layer::LayerType::RoomWall);
+            assert_eq!(cell.cell_type(), crate::cells::layer::LayerType::Floor);
+            assert_eq!(
+                cell.cell_type_at_layer(1).unwrap(),
+                crate::cells::layer::LayerType::RoomWall
+            );
             assert!(!cell.is_spawnable());
             assert!(!cell.is_walkable());
         }
@@ -344,7 +353,11 @@ mod tests {
         fn it_creates_cell_properly() {
             let cell = Cell::room_wall(3, 3);
             assert_eq!(cell.coordinate, Coordinate::new(3, 3));
-            assert_eq!(cell.cell_type(), crate::cells::layer::LayerType::RoomWall);
+            assert_eq!(cell.cell_type(), crate::cells::layer::LayerType::Floor);
+            assert_eq!(
+                cell.cell_type_at_layer(1).unwrap(),
+                crate::cells::layer::LayerType::RoomWall
+            );
             assert!(!cell.is_spawnable());
             assert!(!cell.is_walkable());
         }
