@@ -24,6 +24,32 @@ impl Cell {
         self.coordinate.x == x && self.coordinate.y == y
     }
 
+    pub fn is_layer_underground(&self, layer: &LayerType) -> Option<bool> {
+        let layer_position = match self.layers.iter().position(|l| l == layer) {
+            Some(it) => it,
+            _ => return None,
+        };
+
+        let can_bury_other_layers = vec![
+            LayerType::Floor,
+            LayerType::RoomWall,
+            LayerType::RoomFloor
+        ];
+
+        if can_bury_other_layers.contains(layer) {
+            return Some(false);
+        }
+
+        let underground = can_bury_other_layers.iter().any(|bury_layer| {
+            match self.layers.iter().position(|l| l == bury_layer) {
+                Some(it) => it > layer_position,
+                _ => false,
+            }
+        });
+
+        Some(underground)
+    }
+
     pub fn cell_type(&self) -> LayerType {
         if self.layers.is_empty() {
             return LayerType::Empty;
