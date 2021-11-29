@@ -61,6 +61,12 @@ impl Grid {
         spawnable_cells.get(index).copied()
     }
 
+    pub fn add_layer(&mut self, coordinate: &Coordinate, layer: LayerType) {
+        if let Some(cell) = self.cells.get_mut(coordinate) {
+            cell.add_layer(&layer)
+        }
+    }
+
     pub fn bury_layer(&mut self, coordinate: &Coordinate, layer: LayerType) {
         if let Some(cell) = self.cells.get_mut(coordinate) {
             cell.bury_layer(&layer)

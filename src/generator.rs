@@ -10,17 +10,18 @@ pub struct Generator {
     pub target_number_rooms: usize,
     pub all_room_paths: Vec<RoomPaths>,
     pub seed: String,
-    pub target_hidden_items: Option<HiddenItemGeneration>,
+    pub target_hidden_items: Option<ItemGeneration>,
+    pub target_items: Option<ItemGeneration>,
 }
 
-pub struct HiddenLayerChance {
+pub struct ItemChance {
     pub layer_type: LayerType,
     pub chance: Range<usize>,
 }
 
-pub struct HiddenItemGeneration {
+pub struct ItemGeneration {
     pub target_num_items: usize,
-    pub item_ranges: Vec<HiddenLayerChance>,
+    pub item_ranges: Vec<ItemChance>,
 }
 
 #[derive(Debug)]
@@ -102,6 +103,16 @@ impl Generator {
                     .find(|hidden_chance| hidden_chance.chance.contains(&chance))
                 {
                     grid.bury_layer(&coordinate, it.layer_type)
+                }
+            }
+        }
+
+        if let Some(item_generation) = &self.target_items {
+            for _ in 0..item_generation.target_num_items {
+                let coordinate = grid.random_spawnable_coordinate().unwrap();
+                let chance: usize = rng.gen_range(0..100);
+                if let Some(it) = item_generation.item_ranges.iter().find(|item_chance| item_chance.chance.contains(&chance)) {
+                    grid.add_layer(&coordinate, it.layer_type)
                 }
             }
         }
