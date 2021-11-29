@@ -2,8 +2,11 @@
 name = "tdlg"
 version = "0.1.0"
 edition = "2018"
+description = "Generates a grid of cells that could be used to build a top-down game map. Used by me to learn Rust."
 license-file = "LICENSE.md"
 keywords = ["gamedev", "map generation"]
+readme = "README.md"
+repository = "https://github.com/derrickp/tdlg"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
