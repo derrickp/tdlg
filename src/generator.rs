@@ -121,10 +121,13 @@ impl Generator {
             }
         }
 
+        let exit_coordinate = grid.random_spawnable_coordinate().unwrap();
+
         Ok(TopDownMap {
             grid,
             room_count,
             entry_coordinate,
+            exit_coordinate,
         })
     }
 }
