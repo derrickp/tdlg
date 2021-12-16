@@ -1,7 +1,7 @@
 [package]
 name = "tdlg"
 version = "0.1.1"
-edition = "2018"
+edition = "2021"
 description = "Generates a grid of cells that could be used to build a top-down game map. Used by me to learn Rust."
 license = "MIT"
 keywords = ["gamedev"]
