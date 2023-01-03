@@ -52,8 +52,7 @@ impl Generator {
         let room_iterator = self
             .all_room_paths
             .iter()
-            .map(|f| f.load_rooms().into_iter().flatten())
-            .flatten();
+            .flat_map(|f| f.load_rooms().into_iter().flatten());
         let mut room_templates: Vec<Room> = Vec::new();
 
         for room in room_iterator {

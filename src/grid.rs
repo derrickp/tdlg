@@ -45,11 +45,7 @@ impl Grid {
     }
 
     pub fn random_coordinate(&mut self) -> Option<Coordinate> {
-        let mut coordinates: Vec<Coordinate> = self
-            .cells
-            .iter()
-            .map(|(coordinate, _)| *coordinate)
-            .collect();
+        let mut coordinates: Vec<Coordinate> = self.cells.keys().copied().collect();
 
         coordinates.sort_by_key(|coordinate| (coordinate.x, coordinate.y));
         let index: usize = self.rng.gen_range(0..coordinates.len());
