@@ -4,7 +4,7 @@ use rand_seeder::Seeder;
 use std::collections::HashMap;
 
 use crate::{
-    cells::{cell::Cell, layer::LayerType},
+    cells::{Cell, LayerType},
     coordinate::Coordinate,
     room::Room,
 };

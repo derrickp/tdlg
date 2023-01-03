@@ -1,4 +1,4 @@
-use crate::{cells::cell::Cell, cells::layer::LayerType};
+use crate::cells::{Cell, LayerType};
 
 #[derive(Clone)]
 pub struct Room {
@@ -103,7 +103,10 @@ impl Room {
 
 #[cfg(test)]
 mod tests {
-    use crate::{cells::cell::Cell, cells::layer::LayerType, room::Room};
+    use crate::{
+        cells::{Cell, LayerType},
+        room::Room,
+    };
     use std::fs;
 
     #[test]

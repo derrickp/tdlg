@@ -1,6 +1,6 @@
 use std::ops::Range;
 
-use crate::{cells::layer::LayerType, grid::Grid, loading::RoomPaths, map::TopDownMap, room::Room};
+use crate::{cells::LayerType, grid::Grid, loading::RoomPaths, map::TopDownMap, room::Room};
 use rand::prelude::*;
 use rand_pcg::Pcg64;
 use rand_seeder::Seeder;
