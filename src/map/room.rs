@@ -1,20 +1,86 @@
-use crate::cells::{Cell, LayerType};
+use super::cells::{Cell, LayerType};
 
 #[derive(Clone)]
 pub struct Room {
-    pub cells: Vec<Cell>,
-    pub max_side_length: usize,
+    cells: Vec<Cell>,
+    max_side_length: u16,
+}
+
+impl From<&String> for Room {
+    fn from(value: &String) -> Self {
+        let mut max_side_length: u16 = 0;
+        let mut cells: Vec<Cell> = Vec::new();
+        let mut lines: Vec<&str> = value.split('\n').collect();
+        // Need to reverse so that we get the bottom ones as the first
+        // cells that we create.
+        lines.reverse();
+
+        let mut y_side_length = 0;
+
+        for (y, line) in lines
+            .iter()
+            .filter(|line| !line.trim().is_empty())
+            .enumerate()
+        {
+            let mut side_length = 0;
+            if line.chars().filter(|c| !c.is_whitespace()).count() == 0 {
+                continue;
+            }
+
+            let trimmed = line.trim();
+
+            for (x, c) in trimmed.chars().enumerate() {
+                cells.push(Self::build_cell(x as i32, y as i32, c));
+                side_length += 1;
+            }
+
+            if side_length > max_side_length {
+                max_side_length = side_length;
+            }
+
+            y_side_length += 1;
+        }
+
+        if y_side_length > max_side_length {
+            max_side_length = y_side_length;
+        }
+
+        Room {
+            cells,
+            max_side_length,
+        }
+    }
+}
+
+impl From<&str> for Room {
+    fn from(value: &str) -> Self {
+        Self::from(value.to_string())
+    }
+}
+
+impl From<String> for Room {
+    fn from(value: String) -> Self {
+        Self::from(&value)
+    }
 }
 
 impl Room {
+    pub fn cells(&self) -> &Vec<Cell> {
+        &self.cells
+    }
+
+    pub fn max_side_length(&self) -> u16 {
+        self.max_side_length
+    }
+
     pub fn translate(&self, bottom_left_x: i32, bottom_left_y: i32) -> Self {
         let cells = self
             .cells
             .iter()
             .map(|cell| {
                 cell.translate(
-                    cell.coordinate.x + bottom_left_x,
-                    cell.coordinate.y + bottom_left_y,
+                    cell.coordinate().x() + bottom_left_x,
+                    cell.coordinate().y() + bottom_left_y,
                 )
             })
             .collect();
@@ -25,152 +91,111 @@ impl Room {
         }
     }
 
+    pub fn spawnable_cells(&self) -> Vec<&Cell> {
+        self.cells
+            .iter()
+            .filter(|cell| cell.visible_layer().eq(&LayerType::RoomFloor))
+            .collect()
+    }
+
+    pub fn possible_door_cells(&self) -> Vec<&Cell> {
+        self.cells
+            .iter()
+            .filter(|cell| self.cell_can_be_door(cell))
+            .collect()
+    }
+
+    pub fn cell_can_be_door(&self, cell: &Cell) -> bool {
+        if cell.visible_layer().ne(&LayerType::RoomWall) {
+            return false;
+        }
+
+        let surrounding = vec![
+            (cell.coordinate().x() - 1, cell.coordinate().y()),
+            (cell.coordinate().x(), cell.coordinate().y() - 1),
+            (cell.coordinate().x() + 1, cell.coordinate().y()),
+            (cell.coordinate().x(), cell.coordinate().y() + 1),
+        ];
+
+        let next_to_floor = surrounding.iter().any(|(x, y)| {
+            self.cell_at(*x, *y)
+                .map(|other_cell| other_cell.visible_layer().eq(&LayerType::RoomFloor))
+                .unwrap_or_default()
+        });
+        let next_to_exterior = surrounding
+            .iter()
+            .any(|(x, y)| self.cell_at(*x, *y).is_none());
+
+        next_to_floor && next_to_exterior
+    }
+
     pub fn cell_at(&self, x: i32, y: i32) -> Option<&Cell> {
-        return self.cells.iter().find(|cell| cell.is_at_location(x, y));
+        self.cells.iter().find(|cell| cell.is_at_location(x, y))
     }
 
-    pub fn from_template_strings(templates: Vec<String>) -> Self {
-        let mut max_side_length: usize = 0;
-        let mut cells: Vec<Cell> = Vec::new();
-
-        for template in templates {
-            let mut lines: Vec<&str> = template.split('\n').collect();
-            // Need to reverse so that we get the bottom ones as the first
-            // cells that we create.
-            lines.reverse();
-
-            let mut y_side_length = 0;
-
-            for (y, line) in lines
-                .iter()
-                .filter(|line| !line.trim().is_empty())
-                .enumerate()
-            {
-                let mut side_length = 0;
-                if line.chars().filter(|c| !c.is_whitespace()).count() == 0 {
-                    continue;
-                }
-
-                let trimmed = line.trim();
-
-                for (x, c) in trimmed.chars().enumerate() {
-                    if let Some(existing_cell) = cells
-                        .iter_mut()
-                        .find(|c| c.is_at_location(x as i32, y as i32))
-                    {
-                        existing_cell.add_layer(&LayerType::from(c));
-                    } else {
-                        cells.push(Self::build_cell(x as i32, y as i32, c));
-                    }
-                    side_length += 1;
-                }
-
-                if side_length > max_side_length {
-                    max_side_length = side_length;
-                }
-
-                y_side_length += 1;
-            }
-
-            if y_side_length > max_side_length {
-                max_side_length = y_side_length;
-            }
-        }
-
-        Room {
-            cells,
-            max_side_length,
+    pub fn replace_cell_contents(&mut self, x: i32, y: i32, layer: LayerType) {
+        if let Some(cell) = self.cells.iter_mut().find(|cell| cell.is_at_location(x, y)) {
+            cell.clear_contents();
+            cell.add_layer(layer);
         }
     }
 
-    /// Creates a Room from a string that is structured like
-    ///
-    /// wwww
-    /// wffw
-    /// wffd
-    /// wwww
-    ///
-    /// Where w is wall, f is floor, d is door (as an example)
-    pub fn from_template_string(template: String) -> Self {
-        Self::from_template_strings(vec![template])
+    pub fn add_layer_to_cell(&mut self, x: i32, y: i32, layer: LayerType) {
+        if let Some(cell) = self.cells.iter_mut().find(|cell| cell.is_at_location(x, y)) {
+            cell.add_layer(layer);
+        }
     }
 
     fn build_cell(x: i32, y: i32, c: char) -> Cell {
-        let layer = LayerType::from(c);
-        Cell::new(x, y, layer)
+        let layer: LayerType = c.into();
+        let mut cell = Cell::from((x, y));
+        if layer.ne(&LayerType::RoomFloor) && layer.ne(&LayerType::Door) {
+            cell.add_layer(LayerType::RoomFloor);
+        }
+        cell.add_layer(layer);
+        cell
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        cells::{Cell, LayerType},
-        room::Room,
-    };
+    use crate::map::cells::{Cell, Coordinate, LayerType};
+
+    use super::Room;
     use std::fs;
 
     #[test]
     fn translate_moves_room() {
         let room = Room {
-            cells: vec![Cell::splatted_room_floor(1)],
+            cells: vec![Cell::from((Coordinate::from(1), LayerType::RoomFloor))],
             max_side_length: 4,
         };
 
         let translated = room.translate(4, 6);
         let translated_cell = translated.cells.first().unwrap();
 
-        assert_eq!(translated_cell.coordinate.x, 5);
-        assert_eq!(translated_cell.coordinate.y, 7);
+        assert_eq!(translated_cell.coordinate().x(), 5);
+        assert_eq!(translated_cell.coordinate().y(), 7);
     }
 
     #[test]
     fn from_template_string_builds_right_side_length() {
         let template_string = "wwww\nwffw\nwffd\nwwww".to_string();
-        let room = Room::from_template_string(template_string);
+        let room = Room::from(template_string);
         assert_eq!(room.max_side_length, 4);
-    }
-
-    #[test]
-    fn from_template_strings_builds_right_room() {
-        let base_template = "
-        wwww
-        wffw
-        wffd
-        wwww
-        "
-        .to_string();
-        let rubble = "
-        eeee
-        eree
-        eeee
-        eeee
-        "
-        .to_string();
-        let templates = vec![base_template, rubble];
-        let room = Room::from_template_strings(templates);
-        let cell_1_2 = room.cell_at(1, 2).unwrap();
-        let cell_1_1 = room.cell_at(1, 1).unwrap();
-        assert_eq!(cell_1_1.layers.len(), 1);
-        assert_eq!(
-            cell_1_1.cell_type_at_layer(0).unwrap(),
-            LayerType::RoomFloor
-        );
-
-        assert_eq!(cell_1_2.layers.len(), 2);
-        assert_eq!(cell_1_2.cell_type_at_layer(1).unwrap(), LayerType::Rubble);
     }
 
     #[test]
     fn from_template_string_builds_right_room() {
         // let template_string = "wwww\nwffw\nwffd\nwwww".to_string();
         let template = "
-        wwww
-        wffw
-        wffd
-        wwww
+        ||||
+        |==|
+        |==D
+        ||||
         "
         .to_string();
-        let room = Room::from_template_string(template);
+        let room = Room::from(template);
         assert_eq!(room.cells.len(), 16);
 
         // Bottom wall
@@ -217,7 +242,7 @@ mod tests {
     #[test]
     fn builds_room_from_funky_text() {
         let template = fs::read_to_string("assets/builds_room_from_funky_text.txt").unwrap();
-        let room = Room::from_template_string(template);
+        let room = Room::from(template);
         assert_eq!(room.max_side_length, 7);
         assert_eq!(room.cells.len(), 36);
 

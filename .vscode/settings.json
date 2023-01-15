@@ -4,5 +4,9 @@
   "files.exclude": {
     "target": true
   },
-  "cSpell.words": ["spawnable", "walkdir"]
+  "cSpell.words": [
+    "astar",
+    "spawnable",
+    "walkdir"
+]
 }
