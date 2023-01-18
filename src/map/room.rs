@@ -1,6 +1,8 @@
+use serde::{Deserialize, Serialize};
+
 use super::cells::{Cell, LayerType};
 
-#[derive(Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Room {
     cells: Vec<Cell>,
     max_side_length: u16,

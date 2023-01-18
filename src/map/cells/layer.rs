@@ -1,4 +1,7 @@
-#[derive(PartialEq, Eq, Copy, Clone, Debug)]
+use serde::{Deserialize, Serialize};
+
+#[derive(PartialEq, Eq, Copy, Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum LayerType {
     CommonItem,
     Door,
@@ -105,5 +108,35 @@ impl LayerType {
 
     pub fn is_completely_obstructed(&self) -> bool {
         self == &LayerType::OuterWall || self == &LayerType::Empty
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use serde::{Deserialize, Serialize};
+
+    use super::LayerType;
+
+    #[derive(Deserialize, Serialize)]
+    struct Container {
+        pub layer_type: LayerType,
+    }
+
+    #[test]
+    pub fn serialize() {
+        let container = Container {
+            layer_type: LayerType::Floor,
+        };
+
+        let serialized = serde_json::to_string(&container).unwrap();
+
+        assert_eq!("{\"layer_type\":\"floor\"}", serialized);
+    }
+
+    #[test]
+    pub fn deserialize() {
+        let serialized = "{\"layer_type\":\"room_floor\"}";
+        let container: Container = serde_json::from_str(serialized).unwrap();
+        assert_eq!(LayerType::RoomFloor, container.layer_type);
     }
 }

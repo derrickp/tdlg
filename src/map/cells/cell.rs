@@ -1,6 +1,8 @@
+use serde::{Deserialize, Serialize};
+
 use super::{Coordinate, LayerType};
 
-#[derive(PartialEq, Eq, Clone, Debug)]
+#[derive(PartialEq, Eq, Clone, Debug, Deserialize, Serialize)]
 pub struct Cell {
     coordinate: Coordinate,
     layers: Vec<LayerType>,

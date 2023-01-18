@@ -1,6 +1,8 @@
 use std::hash::Hash;
 
-#[derive(Copy, Clone, Eq, Hash, PartialEq, Debug)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Copy, Clone, Eq, Hash, PartialEq, Debug, Deserialize, Serialize)]
 pub struct Coordinate {
     x: i32,
     y: i32,

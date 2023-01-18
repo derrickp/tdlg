@@ -1,5 +1,6 @@
 use super::{cells::Coordinate, Grid};
 
+#[derive(Debug)]
 pub struct TopDownMap {
     grid: Grid,
     room_count: usize,
