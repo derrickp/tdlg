@@ -93,7 +93,7 @@ pub fn all_room_templates() -> Vec<Room> {
     ]
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct RoomTemplates {
     pub rooms: Vec<Room>,
 }

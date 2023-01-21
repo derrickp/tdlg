@@ -12,6 +12,7 @@ use crate::{
 
 use super::{assets::RoomTemplates, GenerationError, ItemGeneration};
 
+#[derive(Debug)]
 pub struct Generator {
     pub grid_size: NonZeroU16,
     pub target_number_rooms: NonZeroU16,
