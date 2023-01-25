@@ -4,8 +4,8 @@ use pathfinding::prelude::astar;
 use tdlg::generation::Generator;
 
 fn main() {
-    let generator = Generator::build(
-        "godzilla",
+    let mut generator = Generator::build(
+        "godzilla mothra stuff",
         NonZeroU16::new(100).unwrap(),
         NonZeroU16::new(30).unwrap(),
     );
