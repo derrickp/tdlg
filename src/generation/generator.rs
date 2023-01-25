@@ -20,6 +20,7 @@ pub struct Generator {
     pub seed: String,
     pub target_hidden_items: Option<ItemGeneration>,
     pub target_items: Option<ItemGeneration>,
+    rng: Pcg64,
 }
 
 const DEFAULT_SEED: &str = "tdlg";
@@ -35,6 +36,7 @@ impl Default for Generator {
             seed: DEFAULT_SEED.to_string(),
             target_hidden_items: Default::default(),
             target_items: Default::default(),
+            rng: Seeder::from(DEFAULT_SEED).make_rng(),
         }
     }
 }
@@ -42,6 +44,25 @@ impl Default for Generator {
 const CHANCE_TO_SPAWN_IN_ROOM: u8 = 25;
 
 impl Generator {
+    pub fn new(
+        seed: &str,
+        grid_size: NonZeroU16,
+        target_number_rooms: NonZeroU16,
+        target_items: Option<ItemGeneration>,
+        target_hidden_items: Option<ItemGeneration>,
+        room_templates: RoomTemplates,
+    ) -> Self {
+        Generator {
+            grid_size,
+            target_number_rooms,
+            room_templates,
+            seed: seed.to_string(),
+            target_hidden_items,
+            target_items,
+            rng: Seeder::from(seed).make_rng(),
+        }
+    }
+
     pub fn build(seed: &str, grid_size: NonZeroU16, target_number_rooms: NonZeroU16) -> Self {
         Generator {
             grid_size,
@@ -50,6 +71,7 @@ impl Generator {
             seed: seed.to_string(),
             target_hidden_items: Default::default(),
             target_items: Default::default(),
+            rng: Seeder::from(seed).make_rng(),
         }
     }
 
@@ -75,26 +97,30 @@ impl Generator {
             seed: seed.to_string(),
             target_hidden_items,
             target_items,
+            rng: Seeder::from(seed).make_rng(),
         })
     }
 
-    pub fn generate_top_down_map(&self) -> Result<TopDownMap, GenerationError> {
+    pub fn generate_top_down_map(&mut self) -> Result<TopDownMap, GenerationError> {
+
         if self.room_templates.rooms.is_empty() {
             return Err(GenerationError::no_room_paths());
         }
-
-        let mut rng: Pcg64 = Seeder::from(self.seed.as_str()).make_rng();
 
         let mut grid = Grid::build(self.grid_size.get(), self.seed.clone());
         let mut room_count = 0;
 
         for _ in 0..self.target_number_rooms.get() {
-            let index: usize = rng.gen_range(0..self.room_templates.rooms.len());
+            let index: usize = self.rng.gen_range(0..self.room_templates.rooms.len());
             let template = self.room_templates.rooms.get(index).unwrap().clone();
             let max_side_length = template.max_side_length();
 
-            let x: i32 = rng.gen_range(1..=(self.grid_size.get() - max_side_length) as i32);
-            let y: i32 = rng.gen_range(1..=(self.grid_size.get() - max_side_length - 1) as i32);
+            let x: i32 = self
+                .rng
+                .gen_range(1..=(self.grid_size.get() - max_side_length) as i32);
+            let y: i32 = self
+                .rng
+                .gen_range(1..=(self.grid_size.get() - max_side_length - 1) as i32);
             let mut room = template.translate(x, y);
 
             let door_cells = room.possible_door_cells();
@@ -102,7 +128,7 @@ impl Generator {
                 continue;
             }
 
-            let index = rng.gen_range(0..door_cells.len());
+            let index = self.rng.gen_range(0..door_cells.len());
             if let Some(cell) = door_cells.get(index) {
                 room.replace_cell_contents(
                     cell.coordinate().x(),
@@ -113,12 +139,12 @@ impl Generator {
                 println!("did not find door {index} {door_cells:?}");
             }
 
-            let roll_for_spawn: u8 = rng.gen_range(1..=100);
+            let roll_for_spawn: u8 = self.rng.gen_range(1..=100);
             if roll_for_spawn <= CHANCE_TO_SPAWN_IN_ROOM {
                 let spawnable_cells = room.spawnable_cells();
                 let spawn_index_range = 0..spawnable_cells.len();
                 if !spawn_index_range.is_empty() {
-                    if let Some(cell) = spawnable_cells.get(rng.gen_range(spawn_index_range)) {
+                    if let Some(cell) = spawnable_cells.get(self.rng.gen_range(spawn_index_range)) {
                         room.add_layer_to_cell(
                             cell.coordinate().x(),
                             cell.coordinate().y(),
@@ -146,7 +172,7 @@ impl Generator {
         if let Some(hidden_item_generation) = &self.target_hidden_items {
             for _ in 0..hidden_item_generation.target_num_items {
                 let coordinate = grid.random_unblocked_coordinate().unwrap();
-                let chance: usize = rng.gen_range(0..100);
+                let chance: usize = self.rng.gen_range(0..100);
                 if let Some(it) = hidden_item_generation
                     .item_ranges
                     .iter()
@@ -160,7 +186,7 @@ impl Generator {
         if let Some(item_generation) = &self.target_items {
             for _ in 0..item_generation.target_num_items {
                 let coordinate = grid.random_spawnable_coordinate().unwrap();
-                let chance: usize = rng.gen_range(0..100);
+                let chance: usize = self.rng.gen_range(0..100);
                 if let Some(it) = item_generation
                     .item_ranges
                     .iter()

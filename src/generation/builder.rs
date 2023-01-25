@@ -34,14 +34,14 @@ impl GeneratorBuilder {
             .target_number_rooms
             .unwrap_or_else(|| NonZeroU16::new(DEFAULT_TARGET_NUMBER_ROOMS).unwrap());
 
-        Generator {
+        Generator::new(
+            &seed,
             grid_size,
             target_number_rooms,
-            seed,
-            room_templates: self.room_templates.to_owned().unwrap_or_default(),
-            target_hidden_items: self.target_hidden_items.clone(),
-            target_items: self.target_items.clone(),
-        }
+            self.target_items.clone(),
+            self.target_hidden_items.clone(),
+            self.room_templates.to_owned().unwrap_or_default(),
+        )
     }
 
     pub fn seed(&mut self, seed: &str) -> &mut GeneratorBuilder {
