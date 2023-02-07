@@ -1,5 +1,6 @@
 pub mod cells;
 mod grid;
+pub mod layers;
 mod room;
 mod top_down_map;
 

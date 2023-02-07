@@ -1,25 +1,24 @@
 use serde::{Deserialize, Serialize};
 
+use super::item_rarity::ItemRarity;
+
 #[derive(PartialEq, Eq, Copy, Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum LayerType {
-    CommonItem,
     Door,
     Empty,
     Entrance,
     Exit,
-    ExoticItem,
+    Item(ItemRarity),
     Floor,
     Note,
     OuterWall,
     Path,
-    RareItem,
     RoomFloor,
     RoomWall,
     Rubble,
     Structure,
     Table,
-    UncommonItem,
 }
 
 impl Default for LayerType {
@@ -31,23 +30,23 @@ impl Default for LayerType {
 impl From<LayerType> for char {
     fn from(val: LayerType) -> Self {
         match val {
-            LayerType::CommonItem => 'c',
+            LayerType::Item(ItemRarity::Common) => 'c',
             LayerType::Door => 'D',
             LayerType::Empty => '_',
             LayerType::Entrance => 'o',
             LayerType::Exit => 'x',
-            LayerType::ExoticItem => 'i',
+            LayerType::Item(ItemRarity::Exotic) => 'i',
             LayerType::Floor => '·',
             LayerType::Note => 'n',
             LayerType::OuterWall => '*',
             LayerType::Path => '♦',
-            LayerType::RareItem => 'r',
+            LayerType::Item(ItemRarity::Rare) => 'r',
             LayerType::RoomFloor => '=',
             LayerType::RoomWall => '|',
             LayerType::Rubble => '&',
             LayerType::Structure => 's',
             LayerType::Table => '¬',
-            LayerType::UncommonItem => 'u',
+            LayerType::Item(ItemRarity::Uncommon) => 'u',
         }
     }
 }
@@ -55,23 +54,23 @@ impl From<LayerType> for char {
 impl From<char> for LayerType {
     fn from(c: char) -> Self {
         match c {
-            'c' => LayerType::CommonItem,
+            'c' => LayerType::Item(ItemRarity::Common),
             'D' => LayerType::Door,
             '_' => LayerType::Empty,
             'o' => LayerType::Entrance,
             'x' => LayerType::Exit,
-            'i' => LayerType::ExoticItem,
+            'i' => LayerType::Item(ItemRarity::Exotic),
             '·' => LayerType::Floor,
             'n' => LayerType::Note,
             '*' => LayerType::OuterWall,
             '♦' => LayerType::Path,
-            'r' => LayerType::RareItem,
+            'r' => LayerType::Item(ItemRarity::Rare),
             '=' => LayerType::RoomFloor,
             '|' => LayerType::RoomWall,
             '&' => LayerType::Rubble,
             's' => LayerType::Structure,
             '¬' => LayerType::Table,
-            'u' => LayerType::UncommonItem,
+            'u' => LayerType::Item(ItemRarity::Uncommon),
             _ => LayerType::Empty,
         }
     }
@@ -89,10 +88,10 @@ impl LayerType {
             LayerType::Floor,
             LayerType::RoomFloor,
             LayerType::Rubble,
-            LayerType::CommonItem,
-            LayerType::UncommonItem,
-            LayerType::RareItem,
-            LayerType::ExoticItem,
+            LayerType::Item(ItemRarity::Common),
+            LayerType::Item(ItemRarity::Uncommon),
+            LayerType::Item(ItemRarity::Rare),
+            LayerType::Item(ItemRarity::Exotic),
             LayerType::Note,
             LayerType::Path,
             LayerType::Entrance,

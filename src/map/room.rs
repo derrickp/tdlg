@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::cells::{Cell, LayerType};
+use super::{cells::Cell, layers::LayerType};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Room {
@@ -161,7 +161,10 @@ impl Room {
 
 #[cfg(test)]
 mod tests {
-    use crate::map::cells::{Cell, Coordinate, LayerType};
+    use crate::map::{
+        cells::{Cell, Coordinate},
+        layers::LayerType,
+    };
 
     use super::Room;
     use std::fs;

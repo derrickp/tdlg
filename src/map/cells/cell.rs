@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use super::{Coordinate, LayerType};
+use crate::map::layers::LayerType;
+
+use super::Coordinate;
 
 #[derive(PartialEq, Eq, Clone, Debug, Deserialize, Serialize)]
 pub struct Cell {
@@ -164,7 +166,10 @@ impl Cell {
 
 #[cfg(test)]
 mod tests {
-    use crate::map::cells::{Cell, Coordinate, LayerType};
+    use crate::map::{
+        cells::{Cell, Coordinate},
+        layers::LayerType,
+    };
 
     #[test]
     fn contains_door_with_door() {

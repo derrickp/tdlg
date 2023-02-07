@@ -7,7 +7,7 @@ use rand_seeder::Seeder;
 
 use crate::{
     loading::RoomPaths,
-    map::{cells::LayerType, Grid, Room, TopDownMap},
+    map::{layers::LayerType, Grid, Room, TopDownMap},
 };
 
 use super::{assets::RoomTemplates, GenerationError, ItemGeneration};
@@ -102,7 +102,6 @@ impl Generator {
     }
 
     pub fn generate_top_down_map(&mut self) -> Result<TopDownMap, GenerationError> {
-
         if self.room_templates.rooms.is_empty() {
             return Err(GenerationError::no_room_paths());
         }

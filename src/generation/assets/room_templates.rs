@@ -1,6 +1,6 @@
 use std::num::NonZeroU8;
 
-use crate::map::{cells::LayerType, Room};
+use crate::map::{layers::LayerType, Room};
 
 const FOUR_BY_FOUR_BROKEN: &str = r#"
 ||&&&|

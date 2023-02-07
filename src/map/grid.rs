@@ -1,5 +1,6 @@
 use super::{
-    cells::{Cell, Coordinate, LayerType},
+    cells::{Cell, Coordinate},
+    layers::LayerType,
     Room,
 };
 use rand::prelude::*;

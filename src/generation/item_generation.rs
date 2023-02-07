@@ -1,6 +1,6 @@
 use std::ops::Range;
 
-use crate::map::cells::LayerType;
+use crate::map::layers::LayerType;
 
 #[derive(Clone, Debug)]
 pub struct ItemChance {
