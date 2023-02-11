@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::map::layers::LayerType;
+use crate::map::layers::{FloorType, LayerType, StructureType};
 
 use super::Coordinate;
 
@@ -59,7 +59,7 @@ impl Cell {
 
     pub fn set_to_floor(&mut self) {
         self.layers.clear();
-        self.layers.push(LayerType::Floor);
+        self.layers.push(LayerType::Floor(FloorType::Outdoor));
     }
 
     pub fn is_at_location(&self, x: i32, y: i32) -> bool {
@@ -101,7 +101,7 @@ impl Cell {
     pub fn contains_door(&self) -> bool {
         self.layers
             .iter()
-            .any(|layer| matches!(layer, LayerType::Door))
+            .any(|layer| matches!(layer, LayerType::Structure(StructureType::Door)))
     }
 
     pub fn cell_type_at_layer(&self, layer_index: usize) -> Option<LayerType> {
@@ -115,13 +115,13 @@ impl Cell {
     pub fn add_layer(&mut self, layer: LayerType) {
         // We don't need empty cells
         if layer != LayerType::Empty {
-            if layer == LayerType::RoomWall
+            if layer == LayerType::Structure(StructureType::Wall)
                 && !self
                     .layers
                     .iter()
-                    .any(|existing_layer| existing_layer.eq(&LayerType::RoomFloor))
+                    .any(|existing_layer| existing_layer.eq(&LayerType::Floor(FloorType::Indoor)))
             {
-                self.layers.push(LayerType::RoomFloor);
+                self.layers.push(LayerType::Floor(FloorType::Indoor));
             }
 
             self.layers.push(layer);
@@ -168,14 +168,17 @@ impl Cell {
 mod tests {
     use crate::map::{
         cells::{Cell, Coordinate},
-        layers::LayerType,
+        layers::{FloorType, LayerType, StructureType},
     };
 
     #[test]
     fn contains_door_with_door() {
         let cell = Cell {
             coordinate: Coordinate::from(2),
-            layers: vec![LayerType::Door, LayerType::Floor],
+            layers: vec![
+                LayerType::Structure(StructureType::Door),
+                LayerType::Floor(FloorType::Outdoor),
+            ],
         };
         assert!(cell.contains_door());
     }
@@ -184,7 +187,10 @@ mod tests {
     fn contains_door_without_door() {
         let cell = Cell {
             coordinate: Coordinate::from(2),
-            layers: vec![LayerType::RoomWall, LayerType::Floor],
+            layers: vec![
+                LayerType::Structure(StructureType::Wall),
+                LayerType::Floor(FloorType::Outdoor),
+            ],
         };
         assert!(!cell.contains_door());
     }
@@ -195,8 +201,8 @@ mod tests {
             coordinate: Coordinate::from(2),
             layers: vec![],
         };
-        cell.add_layer(LayerType::RoomFloor);
-        assert_eq!(cell.visible_layer(), LayerType::RoomFloor);
+        cell.add_layer(LayerType::Floor(FloorType::Indoor));
+        assert_eq!(cell.visible_layer(), LayerType::Floor(FloorType::Indoor));
     }
 
     #[test]
@@ -205,7 +211,7 @@ mod tests {
             coordinate: Coordinate::from(2),
             layers: vec![],
         };
-        cell.add_layer(LayerType::RoomFloor);
+        cell.add_layer(LayerType::Floor(FloorType::Indoor));
         assert!(cell.is_spawnable());
         assert!(cell.is_walkable());
     }
@@ -216,7 +222,7 @@ mod tests {
             coordinate: Coordinate::from(2),
             layers: vec![],
         };
-        cell.add_layer(LayerType::Door);
+        cell.add_layer(LayerType::Structure(StructureType::Door));
         assert!(!cell.is_spawnable());
         assert!(cell.is_walkable());
     }
@@ -236,11 +242,11 @@ mod tests {
     fn it_keeps_rest_of_cell() {
         let cell = Cell {
             coordinate: Coordinate::from(2),
-            layers: vec![LayerType::Floor],
+            layers: vec![LayerType::Floor(FloorType::Outdoor)],
         };
         let new_cell = cell.translate(3, 3);
 
-        assert_eq!(new_cell.cell_type(), LayerType::Floor);
+        assert_eq!(new_cell.cell_type(), LayerType::Floor(FloorType::Outdoor));
         assert!(new_cell.is_spawnable());
         assert!(new_cell.is_walkable());
     }
@@ -259,18 +265,18 @@ mod tests {
 
     #[test]
     fn new_creates_cell_properly() {
-        let cell = Cell::from((Coordinate::from(3), LayerType::Floor));
+        let cell = Cell::from((Coordinate::from(3), LayerType::Floor(FloorType::Outdoor)));
         assert_eq!(cell.coordinate, Coordinate::from(3));
-        assert_eq!(cell.cell_type(), LayerType::Floor);
+        assert_eq!(cell.cell_type(), LayerType::Floor(FloorType::Outdoor));
         assert!(cell.is_spawnable());
         assert!(cell.is_walkable());
     }
 
     #[test]
     fn from_creates_cell_properly_with_layer() {
-        let cell = Cell::from((Coordinate::from(3), LayerType::Floor));
+        let cell = Cell::from((Coordinate::from(3), LayerType::Floor(FloorType::Outdoor)));
         assert_eq!(cell.coordinate, Coordinate::from((3, 3)));
-        assert_eq!(cell.cell_type(), LayerType::Floor);
+        assert_eq!(cell.cell_type(), LayerType::Floor(FloorType::Outdoor));
         assert!(cell.is_spawnable());
         assert!(cell.is_walkable());
     }

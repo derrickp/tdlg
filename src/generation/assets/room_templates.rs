@@ -1,6 +1,9 @@
 use std::num::NonZeroU8;
 
-use crate::map::{layers::LayerType, Room};
+use crate::map::{
+    layers::{FloorType, LayerType, StructureType},
+    Room,
+};
 
 const FOUR_BY_FOUR_BROKEN: &str = r#"
 ||&&&|
@@ -68,9 +71,9 @@ fn create_square_room_template_text(floor_count: NonZeroU8) -> String {
     for y in 0..=max {
         for x in 0..=max {
             if x > 0 && x < max && y > 0 && y < max {
-                text.push(LayerType::RoomFloor.into());
+                text.push(LayerType::Floor(FloorType::Indoor).into());
             } else {
-                text.push(LayerType::RoomWall.into());
+                text.push(LayerType::Structure(StructureType::Wall).into());
             }
         }
         text.push('\n');

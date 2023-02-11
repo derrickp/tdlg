@@ -7,7 +7,10 @@ use rand_seeder::Seeder;
 
 use crate::{
     loading::RoomPaths,
-    map::{layers::LayerType, Grid, Room, TopDownMap},
+    map::{
+        layers::{LayerType, StructureType},
+        Grid, Room, TopDownMap,
+    },
 };
 
 use super::{assets::RoomTemplates, GenerationError, ItemGeneration};
@@ -20,6 +23,7 @@ pub struct Generator {
     pub seed: String,
     pub target_hidden_items: Option<ItemGeneration>,
     pub target_items: Option<ItemGeneration>,
+    pub include_outer_wall: bool,
     rng: Pcg64,
 }
 
@@ -36,6 +40,7 @@ impl Default for Generator {
             seed: DEFAULT_SEED.to_string(),
             target_hidden_items: Default::default(),
             target_items: Default::default(),
+            include_outer_wall: true,
             rng: Seeder::from(DEFAULT_SEED).make_rng(),
         }
     }
@@ -51,6 +56,7 @@ impl Generator {
         target_items: Option<ItemGeneration>,
         target_hidden_items: Option<ItemGeneration>,
         room_templates: RoomTemplates,
+        include_outer_wall: bool,
     ) -> Self {
         Generator {
             grid_size,
@@ -59,6 +65,7 @@ impl Generator {
             seed: seed.to_string(),
             target_hidden_items,
             target_items,
+            include_outer_wall,
             rng: Seeder::from(seed).make_rng(),
         }
     }
@@ -71,6 +78,7 @@ impl Generator {
             seed: seed.to_string(),
             target_hidden_items: Default::default(),
             target_items: Default::default(),
+            include_outer_wall: true,
             rng: Seeder::from(seed).make_rng(),
         }
     }
@@ -80,6 +88,7 @@ impl Generator {
         all_room_paths: Vec<RoomPaths>,
         target_hidden_items: Option<ItemGeneration>,
         target_items: Option<ItemGeneration>,
+        include_outer_wall: bool,
     ) -> Result<Generator, GenerationError> {
         if all_room_paths.is_empty() {
             return Err(GenerationError::no_room_paths());
@@ -97,6 +106,7 @@ impl Generator {
             seed: seed.to_string(),
             target_hidden_items,
             target_items,
+            include_outer_wall,
             rng: Seeder::from(seed).make_rng(),
         })
     }
@@ -132,7 +142,7 @@ impl Generator {
                 room.replace_cell_contents(
                     cell.coordinate().x(),
                     cell.coordinate().y(),
-                    LayerType::Door,
+                    LayerType::Structure(StructureType::Door),
                 );
             } else {
                 println!("did not find door {index} {door_cells:?}");
@@ -147,7 +157,7 @@ impl Generator {
                         room.add_layer_to_cell(
                             cell.coordinate().x(),
                             cell.coordinate().y(),
-                            LayerType::Table,
+                            LayerType::Structure(StructureType::Table),
                         );
                     }
                 }
@@ -164,7 +174,10 @@ impl Generator {
         }
 
         grid.fill_empty_cells();
-        grid.create_outer_wall();
+
+        if self.include_outer_wall {
+            grid.create_outer_wall();
+        }
 
         let entry_coordinate = grid.random_spawnable_coordinate().unwrap();
 

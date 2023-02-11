@@ -10,6 +10,7 @@ pub struct GeneratorBuilder {
     seed: Option<String>,
     target_hidden_items: Option<ItemGeneration>,
     target_items: Option<ItemGeneration>,
+    include_outer_wall: Option<bool>,
 }
 
 pub fn builder() -> GeneratorBuilder {
@@ -41,6 +42,7 @@ impl GeneratorBuilder {
             self.target_items.clone(),
             self.target_hidden_items.clone(),
             self.room_templates.to_owned().unwrap_or_default(),
+            self.include_outer_wall.unwrap_or_default(),
         )
     }
 
@@ -82,6 +84,12 @@ impl GeneratorBuilder {
 
     pub fn target_items(&mut self, target_items: ItemGeneration) -> &mut GeneratorBuilder {
         self.target_items = Some(target_items);
+
+        self
+    }
+
+    pub fn include_outer_wall(&mut self, include_outer_wall: bool) -> &mut GeneratorBuilder {
+        self.include_outer_wall = Some(include_outer_wall);
 
         self
     }

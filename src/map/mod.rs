@@ -1,3 +1,4 @@
+mod biome;
 pub mod cells;
 mod grid;
 pub mod layers;

@@ -1,6 +1,6 @@
 use super::{
     cells::{Cell, Coordinate},
-    layers::LayerType,
+    layers::{LayerType, StructureType},
     Room,
 };
 use rand::prelude::*;
@@ -141,11 +141,11 @@ impl Grid {
         for x in -1..=self.size as i32 {
             self.add_cell(Cell::from((
                 Coordinate::from((x, -1)),
-                LayerType::OuterWall,
+                LayerType::Structure(StructureType::Boulder),
             )));
             self.add_cell(Cell::from((
                 Coordinate::from((x, self.size as i32)),
-                LayerType::OuterWall,
+                LayerType::Structure(StructureType::Boulder),
             )));
         }
 
@@ -153,11 +153,11 @@ impl Grid {
         for y in 0..=self.size as i32 {
             self.add_cell(Cell::from((
                 Coordinate::from((-1, y)),
-                LayerType::OuterWall,
+                LayerType::Structure(StructureType::Boulder),
             )));
             self.add_cell(Cell::from((
                 Coordinate::from((self.size as i32, y)),
-                LayerType::OuterWall,
+                LayerType::Structure(StructureType::Boulder),
             )));
         }
     }
