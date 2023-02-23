@@ -16,6 +16,10 @@ pub struct Grid {
 }
 
 impl Grid {
+    pub fn cell(&self, coordinate: &Coordinate) -> Option<&Cell> {
+        self.cells.get(coordinate)
+    }
+
     pub fn cells(&self) -> Vec<&Cell> {
         self.cells.values().collect()
     }
