@@ -123,6 +123,12 @@ impl Grid {
         }
     }
 
+    pub fn remove_layer(&mut self, coordinate: &Coordinate, layer: LayerType) {
+        if let Some(cell) = self.cells.get_mut(coordinate) {
+            cell.remove_layer(&layer)
+        }
+    }
+
     pub fn bury_layer(&mut self, coordinate: &Coordinate, layer: LayerType) {
         if let Some(cell) = self.cells.get_mut(coordinate) {
             cell.bury_layer(&layer)

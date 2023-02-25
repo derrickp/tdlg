@@ -49,6 +49,10 @@ impl Cell {
         &self.coordinate
     }
 
+    pub fn remove_layer(&mut self, layer: &LayerType) {
+        self.layers.retain(|l| l.ne(layer))
+    }
+
     pub fn clear_contents(&mut self) {
         self.layers.clear()
     }
@@ -170,6 +174,22 @@ mod tests {
         cells::{Cell, Coordinate},
         layers::{FloorType, LayerType, StructureType},
     };
+
+    #[test]
+    fn remove_layer() {
+        let mut cell = Cell {
+            coordinate: Coordinate::from(2),
+            layers: vec![
+                LayerType::Structure(StructureType::Wall),
+                LayerType::Floor(FloorType::Outdoor),
+            ],
+        };
+
+        cell.remove_layer(&LayerType::Structure(StructureType::Wall));
+
+        assert_eq!(LayerType::Floor(FloorType::Outdoor), cell.visible_layer());
+        assert!(cell.is_walkable());
+    }
 
     #[test]
     fn contains_door_with_door() {
