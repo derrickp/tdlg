@@ -133,12 +133,12 @@ mod tests {
 
         let serialized = serde_json::to_string(&container).unwrap();
 
-        assert_eq!("{\"layer_type\":{\"floor\":\"Outdoor\"}}", serialized);
+        assert_eq!("{\"layer_type\":{\"floor\":\"outdoor\"}}", serialized);
     }
 
     #[test]
     pub fn deserialize() {
-        let serialized = "{\"layer_type\":{\"floor\":\"Indoor\"}}";
+        let serialized = "{\"layer_type\":{\"floor\":\"indoor\"}}";
         let container: Container = serde_json::from_str(serialized).unwrap();
         assert_eq!(LayerType::Floor(FloorType::Indoor), container.layer_type);
     }
