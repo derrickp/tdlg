@@ -31,6 +31,10 @@ impl TopDownMap {
         &self.grid
     }
 
+    pub fn grid_mut(&mut self) -> &mut Grid {
+        &mut self.grid
+    }
+
     pub fn entry(&self) -> &Coordinate {
         &self.entry_coordinate
     }
