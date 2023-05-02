@@ -1,6 +1,6 @@
 [package]
 name = "tdlg"
-version = "2.0.1"
+version = "3.0.0"
 edition = "2021"
 description = "Generates a grid of cells that could be used to build a top-down game map. Used by me to learn Rust."
 license = "MIT"
@@ -12,7 +12,7 @@ exclude = [".*"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-pathfinding = "4.2.1"
+pathfinding = "4.2"
 rand = "0.8"
 rand_pcg = "0.3"
 rand_seeder = "0.2"
